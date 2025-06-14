@@ -43,9 +43,9 @@
     db_query.password = "password"
     db_query.host = "127.0.0.1"
     db_query.port = 3306
-    db_query.name_table_migrations = "table_migrations_app"
+    db_query.name_table_migrations = "table_migrations_app" // two characters minimum
     db_query.show_query = true
-    db_query.show_depuration = true
+    db_query.show_depuration = true // show depuration on finalize migration, recommended
     db_query.start()
     ```
 
@@ -84,7 +84,7 @@
     npm run db_refresh
     ```
 - **db_migrate_all**  
-    #### Migrate all files pending, example: 
+    #### Migrate all files, Execute first time after initialize repository,  example: 
     ```javascript    
     npm run db_migrate_all
     ```

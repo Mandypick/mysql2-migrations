@@ -1,6 +1,6 @@
 import mysql from "mysql2/promise"
 import colors from "colors"
-import { argv } from "node:process"
+import { argv, config } from "node:process"
 import fs from 'node:fs/promises'
 import path from "node:path"
 import { pathToFileURL } from "node:url"
@@ -16,10 +16,10 @@ let objectConn = {
     password:'password',
     database: 'test',
     waitForConnections: true,
-    connectionLimit: 10,
+    connectionLimit: 100,
     queueLimit: 0,
-    enableKeepAlive: true,
-    keepAliveInitialDelay: 0,
+    enableKeepAlive: false,
+    keepAliveInitialDelay: 1000
 }
 
 let _config = {
@@ -29,6 +29,8 @@ let _config = {
     "show_query":false,
     "cb":()=>{}
 }
+
+let pool=null
 
 const makeaDir = async()=>{
     const dirs = await fs.opendir(relative_path).catch((err)=>{
@@ -53,6 +55,11 @@ const __query = async(config)=>{
     objectConn.password = config.password
     objectConn.port = config.port
     _config = config
+    
+    if(!pool){
+        pool = mysql.createPool(objectConn)
+    }
+
     const makedir = await makeaDir()
     if(!makedir.status){ return makedir }
     const result = await run_query("CREATE TABLE IF NOT EXISTS `" +_config.table+ "` (`timestamp` varchar(254) NOT NULL UNIQUE)")
@@ -61,14 +68,13 @@ const __query = async(config)=>{
 }
 
 const run_query = async(query)=>{
-    const pool = mysql.createPool(objectConn)
     const conn = await pool.getConnection().catch((err)=> {return {"error":err}})
-    if(conn.error){ return conn }
+    if(conn.error){ return { status:false, ...conn?.error } }
     const result = await conn.query(query).then(([rows,fields])=>{
        return {"status":true,rows,fields}
     })
-    .catch((err)=>{ return {"error": err} })
-    .finally(()=> conn.release())
+    .catch((err)=>{ return {"status":false, "error": err} })
+    .finally(()=>{ if(conn && conn.release) conn.release()} )
     return result
 }
 
@@ -99,6 +105,7 @@ const execute_query = async (files_names,type)=>{
                     await updateRecords(type,timestamp_val)
                     return await execute_query(sort_files_names,type)
                 }else{
+                    await updateRecords(type,timestamp_val)
                     console.error(colors.bgRed(colors.bgMagenta(_config.name_app)+ " Failed Query! "+type.toUpperCase()+", message: "+colors.bgYellow(result.error.sqlMessage)))
                     return {"status":false,"error":result.error.sqlMessage}
                 }
@@ -131,13 +138,27 @@ const validate_file_name = (file_name)=>{
 }
 
 const readFolder = async()=>{
-    return await fs.readdir(relative_path,{encoding:"utf-8",recursive:false,whitFilesTypes:false},(err,files)=>{if(err){ throw err }})
+    const files = await fs.readdir(relative_path,{encoding:"utf-8",recursive:false,whitFilesTypes:false},(err,files)=>{if(err){ throw err }})
+    
+    const arrayFiles =  files.filter((f)=> f.endsWith(".js") && f.includes("_") ) 
+    const timestamps = []
+    const arrayFilesItems =  arrayFiles.map((f)=>{ 
+        const _timestamp = f.split("_", 1)[0]
+        if(_timestamp.length & !isNaN(Number(_timestamp))){
+            timestamps.push(_timestamp)
+            return {"timestamp": _timestamp, "file_name":f } 
+        }
+    }) 
+    
+    return {"timestamps":timestamps,"files":arrayFilesItems}
+
 }
 
 const add_migration = async ()=>{
-    const file_name = (Date.now()+"_"+argv[3]+".js").toString()
+    const DateString = Date.now()
+    const file_name = (DateString+"_"+argv[3]+".js").toString()
     const file_path = path.join(relative_path,file_name)
-    const content = "export default "+JSON.stringify({description:"description of migration",up:"",down:""},null,4)
+    const content = "export default "+JSON.stringify({description:"Description of migration: "+DateString,up:"",down:""},null,4)
     try {
         await fs.writeFile(file_path,content,"utf-8")
         return {"status":true,"file_name":file_name}
@@ -146,56 +167,78 @@ const add_migration = async ()=>{
     }
 }
 
-const up_migrations = async()=>{
-    const result = await run_query("SELECT timestamp FROM "+_config.table+" ORDER BY timestamp DESC LIMIT 1")
+const up_migration = async()=>{
+    const results = await run_query("SELECT timestamp FROM "+_config.table+" ORDER BY timestamp ASC")
     const files_names = []
-    let max_timestamp = 0
-    if(result.status && result.rows.length){ max_timestamp = result.rows[0].timestamp }
-    const files = await readFolder()
-    files.forEach((file)=>{
-        const timestamp_split = file.split("_",1)
-        if(timestamp_split.length){
-            const timestamp = parseInt(timestamp_split[0])
-            if(Number.isInteger(timestamp) && timestamp > max_timestamp){
-                files_names.push({"timestamp":timestamp,"file_name":file})
-            }
-        } else{
-            throw new Error("Invalid file "+file)
-        }
-    })
+    
+    let timestamps_db = results.rows.map(r => r.timestamp)
+    let max_timestamp = ""
+    if(results.status && timestamps_db.length > 1){
+        max_timestamp = timestamps_db[timestamps_db.length-1]
+    }else if(results.status && timestamps_db.length == 1){
+        max_timestamp = timestamps_db[0]
+    }
+
+    if(max_timestamp == 0){
+        console.info({"status":true,"type":"up","error":"No new migrations pending! ","action":"Executig 'npm run db_migrate_all' once command.."})
+        max_count = 99999
+        return await up_migrations_first_time()
+    }
+
+    const { files, timestamps } = await readFolder()
+    
+    for (let index = 0; index < files.length; index++) {
+        const file = files[index]
+        if( Number(file.timestamp) > Number(max_timestamp)){
+            files_names.push(file)
+        }    
+    }
+    
+    if(!files_names.length){
+        return {"status":false,"type":"up","error":"No new migrations pending!","message":"To create new mingrations use 'npm run db_create name_example_migration'"}
+    }
+    
     return await execute_query(files_names,"up")
 }
 
-const  up_migrations_all = async()=>{
-    const result  = await run_query("SELECT timestamp FROM " +_config.table)
+const  up_migrations_first_time = async()=>{
+    const results  = await run_query("SELECT timestamp FROM " +_config.table)
     const files_names = []
-    let timestamps = result.rows.map(r => parseInt(r.timestamp))
-    const files = await readFolder()
-    files.forEach((file)=>{
-        let timestamp_split = file.split("_",1)
-        if(timestamp_split.length){
-            let timestamp = parseInt(timestamp_split[0])
-            if(Number.isInteger(timestamp) && !timestamps.includes(timestamp)){
-                files_names.push({"timestamp":timestamp,"file_name":file})
-            }
+    let timestamps_db = results.rows.map(r => r.timestamp)
+    
+    const { files, timestamps } = await readFolder()
+    
+    for (let index = 0; index < files.length; index++) {
+        const file = files[index];
+        
+        const indexTimestamp = timestamps_db.indexOf(file.timestamp)
+        if(indexTimestamp == -1){
+            files_names.push(file)
         }else{
-            throw new Error("Invalid file "+file)
+            console.info(colors.bgRed("Warning ")+colors.bgYellow("Already exist migration for: ")+colors.bgGreen(file.file_name)+colors.bgBlue(" remove timestamp:"+file.timestamp +" from "+_config.table +" table first!"))
         }
-    })
+        
+    }
     return await execute_query(files_names,"up")
 }
 
 const down_migrations = async()=>{
     const results = await run_query("SELECT timestamp FROM "+_config.table+" ORDER BY timestamp DESC LIMIT " + max_count)
     let files_names = []
-    let temp_timestamps = results.rows.map((ele)=>{return ele.timestamp})
-    const files = await readFolder()
-    files.forEach((file)=>{
-        let timestamp = file.split("_", 1)[0]
-        if(temp_timestamps.indexOf(timestamp) > -1){
-            files_names.push({"timestamp":timestamp,"file_name":file})
+    let timestamps_db = results.rows.map((ele)=>{return ele.timestamp})
+    if(timestamps_db.length == 0) return {"status":true,"type":"down","message":"No migrations registered!"}
+    const { files, timestamps } = await readFolder()
+        
+    for (let index = 0; index < timestamps_db.length; index++) {
+        const timestamp_db = timestamps_db[index]
+        const indexTimestamp = timestamps.indexOf(timestamp_db)
+        if(indexTimestamp> -1){
+            files_names.push(files[indexTimestamp])
+        }else{
+            return {"status": false, "type": "down", "error": " Migration file: "+timestamp_db+" no found!, remove the timestamp registered from the "+_config.table +" table or recover the file in the migrations folder!" }
         }
-    })
+    }
+    
     return await execute_query(files_names,"down")
 }
 
@@ -229,7 +272,7 @@ const run_migration_directly = async()=>{
 
 const MessageConsoleAction = (queries,type,file_name)=>{
     const description = queries["description"] ?? file_name
-    let message_query = " no show query "
+    let message_query = " no show "
     if(_config.show_query){ message_query = queries[type] }
     console.info(colors.bgMagenta(_config.name_app)+colors.bgGreen(" Dispatch: ")+colors.bgBlue(" Type: " +type.toUpperCase())+colors.bgGreen(" Query: ")+colors.bgCyan(message_query)+colors.bgGreen(" Description: ")+colors.bgCyan(description))
     return description
@@ -251,14 +294,14 @@ const handle = async()=>{
             const result = await add_migration()
             if(result.status){
                 console.info(colors.bgMagenta(" >> File Migration: "+colors.bgCyan(result.file_name)+" Path: "+colors.bgGreen(relative_path)+" << "))
-                _config.cb(" >> Create: << ")
+                _config.cb(" >> CREATE << ")
             }else{
-                _config.cb(" >> Create: "+colors.bgRed("Failed! "+result.error)+" << ")
+                _config.cb(" >> CREATE: "+colors.bgRed("Failed! "+result.error)+" << ")
             }
             return result
         } else{
             console.error(colors.bgRed(colors.bgMagenta(_config.name_app)+ validateFileName.error))
-            _config.cb(" >> Create: << ")
+            _config.cb(" >> CREATE << ")
             return validateFileName
         }
     }
@@ -266,27 +309,33 @@ const handle = async()=>{
         
         if(argv[2] == "up"){
             max_count = 1
-            const result = await up_migrations()
+            const result = await up_migration()
             _config.cb(" >> MIGRATE << ")
             return result
         }
         
         if(argv[2] == "down"){
             max_count = 1
-            const result = down_migrations()
+            const result = await down_migrations()
             _config.cb(" >> ROLLBACK << ")
             return result
         }
         
         if(argv[2] == "migrate"){
-            const result = await up_migrations_all()
-            _config.cb(" >> MIGRATE ALL << ")
+            const result = await up_migrations_first_time()
+            _config.cb(" >> MIGRATE FIRST TIME << ")
             return result
         }
         
         if(argv[2] == "refresh"){
             const resultdown = await down_migrations()
-            const resultup = await up_migrations()
+            if(!resultdown.status){
+                return resultdown
+            }
+            const resultup = await up_migrations_first_time()
+            if(!resultup.status){
+                return resultup
+            }
             _config.cb(" >> REFRESH << ")
             return {"down":resultdown,"up":resultup}
         }
@@ -303,7 +352,7 @@ const handle = async()=>{
         }
     }
     console.error(colors.bgMagenta(_config.name_app)+colors.bgRed(" Failed command! "))
-    return {"status":false,"error":"Invalid command!"}
+    return {"status":false,"error":"Invalid command!","message":"Missed or to many parameter?"}
 }
 
 export default __query

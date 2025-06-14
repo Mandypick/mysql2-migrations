@@ -25,7 +25,7 @@ export default class Migration {
             "database": this.database,
             "password" : this.password,
             "name_app": this.name_app,
-            "table": (typeof this.name_table_migrations === "string" && this.name_table_migrations.length <= 60) ? this.name_table_migrations : "table_migrations_app",
+            "table": (typeof this.name_table_migrations === "string" && this.name_table_migrations.length >= 2 && this.name_table_migrations.length <= 60) ? this.name_table_migrations : "table_migrations_app",
             "migrations_types": ["up","down"],
             "show_query": typeof this.show_query === "boolean" ? this.show_query : false,
             "cb":(messageEvent="")=>{
@@ -33,7 +33,7 @@ export default class Migration {
             }
         })
         if( typeof this.show_depuration === "boolean" && this.show_depuration){
-            console.info(colors.bgCyan("mysql2-migrations log:"),result)
+            console.info(colors.bgCyan("mysql2-migrations log: "),result)
         }
         process.exit(0)
     }
