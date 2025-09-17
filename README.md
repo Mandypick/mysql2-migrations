@@ -7,7 +7,7 @@
 
 - This package must be used with MODULE TYPE IMPORT AND FROM
 - Set config on package.json "type": "module"
-- NO compatible with MODULE EXPORT AND REQUIRE
+- NO compatible with MODULE.EXPORT AND REQUIRE
 - Due to various reasons between permissions and compatibility this package does NOT work on Linux, I am very sorry.
 
 # 🧠 Configuration
@@ -18,8 +18,7 @@
     - Should install 'mysql2' dependency in your projects first
 
     ```javascript
-    npm i mysql2
-    npm i mysql2-migrations
+    npm i mysql2 mysql2-migrations
     ```
 
 - step 2

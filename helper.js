@@ -71,7 +71,7 @@ const run_query = async(query)=>{
     const conn = await pool.getConnection().catch((err)=> {return {"error":err}})
     if(conn.error){ return { status:false, ...conn?.error } }
     const result = await conn.query(query).then(([rows,fields])=>{
-       return {"status":true,rows,fields}
+    return {"status":true,rows,fields}
     })
     .catch((err)=>{ return {"status":false, "error": err} })
     .finally(()=>{ if(conn && conn.release) conn.release()} )
@@ -99,13 +99,13 @@ const execute_query = async (files_names,type)=>{
                 MessageConsoleQueryEmpty(type,description)
                 await updateRecords(type,timestamp_val)
                 return await execute_query(sort_files_names,type)
-            }else{                
+            }else{
                 const result = await run_query(queries[type])
                 if(result.status){
                     await updateRecords(type,timestamp_val)
                     return await execute_query(sort_files_names,type)
+
                 }else{
-                    await updateRecords(type,timestamp_val)
                     console.error(colors.bgRed(colors.bgMagenta(_config.name_app)+ " Failed Query! "+type.toUpperCase()+", message: "+colors.bgYellow(result.error.sqlMessage)))
                     return {"status":false,"error":result.error.sqlMessage}
                 }
@@ -179,7 +179,7 @@ const up_migration = async()=>{
         max_timestamp = timestamps_db[0]
     }
 
-    if(max_timestamp == 0){
+    if(max_timestamp == ""){
         console.info({"status":true,"type":"up","error":"No new migrations pending! ","action":"Executig 'npm run db_migrate_all' once command.."})
         max_count = 99999
         return await up_migrations_first_time()

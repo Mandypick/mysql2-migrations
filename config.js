@@ -77,12 +77,12 @@ const addScripstToConfiguration = async()=>{
 
 const init = async ()=>{
     
-    console.info(colors.bgMagenta(" init mysql2-migrations "))    
+    console.info(colors.bgMagenta("⚡️init mysql2-migrations \n"))    
     
     console.info(colors.bgGreen(" Creating config directory.."))
     const makeaDirResultConfig = await makeaDirConfig(relative_path_config)
     if(makeaDirResultConfig.status){
-        console.info(colors.bgCyan(" Created config directory! OK"))
+        console.info(colors.bgCyan("⚡️Created config directory! OK \n"))
     }else{
         console.error(colors.bgRed(" Error: "+makeaDirResultConfig.error))
     }
@@ -90,7 +90,7 @@ const init = async ()=>{
     console.info(colors.bgGreen(" Creating migrations directory.."))
     const makeaDirResultMigrations = await makeaDirConfig(relative_path_migrations)
     if(makeaDirResultMigrations.status){
-        console.info( colors.bgCyan(" Created migrations directory! OK"))
+        console.info( colors.bgCyan("⚡️Created migrations directory! OK \n"))
     }else{
         console.error(colors.bgRed(" Error: "+makeaDirResultMigrations.error))
     }
@@ -99,7 +99,7 @@ const init = async ()=>{
     console.info(colors.bgGreen(" Add scripts commands to package.."))
     const addScriptsResult = await addScripstToConfiguration()
     if(addScriptsResult.status){
-        console.info(colors.bgCyan(" Scripts commands added to package.json! OK"))
+        console.info(colors.bgCyan("⚡️Scripts commands added to package.json! OK \n"))
     }else{
         console.error(colors.bgRed(" Error: "+addScriptsResult.error))
     }
@@ -108,7 +108,7 @@ const init = async ()=>{
     if(makeaDirResultConfig.status){
         const resultAddFileConfig = await addFileConfig()
         if(resultAddFileConfig.status){
-            console.info(colors.bgCyan(" Config file created! OK, path: "+colors.bgBlue(path_config)))
+            console.info(colors.bgCyan("⚡️Config file created! OK, path: "+colors.bgBlue(path_config)))
         } else {
             console.error(colors.bgRed(" Error: "+resultAddFileConfig.error))
         }

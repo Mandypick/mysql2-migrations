@@ -1,6 +1,6 @@
 {
   "name": "mysql2-migrations",
-  "version": "3.1.4",
+  "version": "3.2.4",
   "description": "Create and manager migrations with mysql2 in module type apps, only support windows os",
   "main": "index.js",
   "type": "module",
@@ -13,7 +13,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Rockhount1793/mysql2-migrations.git"
+    "url": "git+https://github.com/Mandypick/mysql2-migrations.git"
   },
   "keywords": [
     "mysql2",
@@ -26,9 +26,9 @@
   "author": "NZCaicedo",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/Rockhount1793/mysql2-migrations/issues"
+    "url": "https://github.com/Mandypick/mysql2-migrations/issues"
   },
-  "homepage": "https://github.com/Rockhount1793/mysql2-migrations#readme",
+  "homepage": "https://github.com/Mandypick/mysql2-migrations#readme",
   "dependencies": {
     "colors": "1.4.0"
   }
