@@ -29,11 +29,11 @@ export default class Migration {
             "migrations_types": ["up","down"],
             "show_query": typeof this.show_query === "boolean" ? this.show_query : false,
             "cb":(messageEvent="")=>{
-                console.info(colors.bgCyan(colors.bgMagenta(this.name_app)+" Command "+colors.bgMagenta(messageEvent)+" Finished! "))
+                console.info(colors.cyan(colors.magenta(this.name_app)+" Command "+colors.magenta(messageEvent)+" Finished! "))
             }
         })
         if( typeof this.show_depuration === "boolean" && this.show_depuration){
-            console.info(colors.bgCyan("mysql2-migrations log: "),result)
+            console.info(colors.cyan("mysql2-migrations log: "),result)
         }
         process.exit(0)
     }

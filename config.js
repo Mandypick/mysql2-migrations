@@ -53,7 +53,8 @@ const addScripstToConfiguration = async()=>{
         "db_refresh": "node mysql2-migrations/migrations_config.js refresh",
         "db_migrate_all": "node mysql2-migrations/migrations_config.js migrate",
         "db_migrate": "node mysql2-migrations/migrations_config.js up",
-        "db_rollback": "node mysql2-migrations/migrations_config.js down"
+        "db_rollback": "node mysql2-migrations/migrations_config.js down",
+        "db_status": "node mysql2-migrations/migrations_config.js status"
     }
 
     if(data.scripts){
@@ -77,43 +78,43 @@ const addScripstToConfiguration = async()=>{
 
 const init = async ()=>{
     
-    console.info(colors.bgMagenta("⚡️init mysql2-migrations \n"))    
+    console.info(colors.magenta("⚡️init mysql2-migrations \n"))    
     
-    console.info(colors.bgGreen(" Creating config directory.."))
+    console.info(colors.green(" Creating config directory.."))
     const makeaDirResultConfig = await makeaDirConfig(relative_path_config)
     if(makeaDirResultConfig.status){
-        console.info(colors.bgCyan("⚡️Created config directory! OK \n"))
+        console.info(colors.cyan("⚡️Created config directory! OK \n"))
     }else{
-        console.error(colors.bgRed(" Error: "+makeaDirResultConfig.error))
+        console.error(colors.red(" Error: "+makeaDirResultConfig.error))
     }
 
-    console.info(colors.bgGreen(" Creating migrations directory.."))
+    console.info(colors.green(" Creating migrations directory.."))
     const makeaDirResultMigrations = await makeaDirConfig(relative_path_migrations)
     if(makeaDirResultMigrations.status){
-        console.info( colors.bgCyan("⚡️Created migrations directory! OK \n"))
+        console.info( colors.cyan("⚡️Created migrations directory! OK \n"))
     }else{
-        console.error(colors.bgRed(" Error: "+makeaDirResultMigrations.error))
+        console.error(colors.red(" Error: "+makeaDirResultMigrations.error))
     }
 
     
-    console.info(colors.bgGreen(" Add scripts commands to package.."))
+    console.info(colors.green(" Add scripts commands to package.."))
     const addScriptsResult = await addScripstToConfiguration()
     if(addScriptsResult.status){
-        console.info(colors.bgCyan("⚡️Scripts commands added to package.json! OK \n"))
+        console.info(colors.cyan("⚡️Scripts commands added to package.json! OK \n"))
     }else{
-        console.error(colors.bgRed(" Error: "+addScriptsResult.error))
+        console.error(colors.red(" Error: "+addScriptsResult.error))
     }
 
-    console.info( colors.bgGreen(" Creating file config.."))
+    console.info( colors.green(" Creating file config.."))
     if(makeaDirResultConfig.status){
         const resultAddFileConfig = await addFileConfig()
         if(resultAddFileConfig.status){
-            console.info(colors.bgCyan("⚡️Config file created! OK, path: "+colors.bgBlue(path_config)))
+            console.info(colors.cyan("⚡️Config file created! OK, path: "+colors.blue(path_config)))
         } else {
-            console.error(colors.bgRed(" Error: "+resultAddFileConfig.error))
+            console.error(colors.red(" Error: "+resultAddFileConfig.error))
         }
     }else{
-        console.error(colors.bgRed(" Error:  Config directory not found!"))
+        console.error(colors.red(" Error:  Config directory not found!"))
     }
 
     process.exit(0)

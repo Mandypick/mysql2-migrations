@@ -1,7 +1,7 @@
 {
   "name": "mysql2-migrations",
-  "version": "3.2.4",
-  "description": "Create and manager migrations with mysql2 in module type apps, only support windows os",
+  "version": "3.3.0",
+  "description": "Create and manager migrations with mysql2 in module type apps",
   "main": "index.js",
   "type": "module",
   "bin":{
@@ -21,9 +21,10 @@
     "nodejs",
     "module",
     "database",
-    "windows"
+    "windows",
+    "linux"
   ],
-  "author": "NZCaicedo",
+  "author": "Mandypick",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/Mandypick/mysql2-migrations/issues"

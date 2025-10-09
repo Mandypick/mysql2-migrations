@@ -1,14 +1,12 @@
-#  Mysql2 Migrations :: Type module projects : Windows OS
+#  Mysql2 Migrations :: Type module projects
     
 - Create and manager migrations with mysql2 from repositories with configuration "TYPE MODULE"
-- Only support windows os
 
 # 📫 Disclaimer
 
 - This package must be used with MODULE TYPE IMPORT AND FROM
 - Set config on package.json "type": "module"
 - NO compatible with MODULE.EXPORT AND REQUIRE
-- Due to various reasons between permissions and compatibility this package does NOT work on Linux, I am very sorry.
 
 # 🧠 Configuration
 
@@ -63,7 +61,8 @@
             "db_refresh": "node mysql2-migrations/migrations_config.js refresh",                
             "db_migrate_all": "node mysql2-migrations/migrations_config.js migrate",   
             "db_migrate": "node mysql2-migrations/migrations_config.js up",                   
-            "db_rollback": "node mysql2-migrations/migrations_config.js down",                   
+            "db_rollback": "node mysql2-migrations/migrations_config.js down",
+            "db_status": "node mysql2-migrations/migrations_config.js status"              
         }
     ```
 
@@ -95,9 +94,15 @@
     ```
 
 - **db_rollback**
-    #### Undo latest migration,     example: 
+    #### Undo latest migration, example: 
     ```javascript     
     npm run db_rollback
+    ```
+
+- **db_status**
+    #### Check migrations integrity, example: 
+    ```javascript     
+    npm run db_status
     ```
 
 - **too You can also UP or DOWN direct migrations**
@@ -115,7 +120,7 @@
     ```javascript
     npm run db_create create_users_table 
     ```
- - Go to "migrations" folder and edit file with query, example:
+ - Go to "migrations" folder and edit file with query(should contain up and down query or only up), example:
     
     ```javascript
         export default {

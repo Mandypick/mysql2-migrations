@@ -104,9 +104,8 @@ const execute_query = async (files_names,type)=>{
                 if(result.status){
                     await updateRecords(type,timestamp_val)
                     return await execute_query(sort_files_names,type)
-
                 }else{
-                    console.error(colors.bgRed(colors.bgMagenta(_config.name_app)+ " Failed Query! "+type.toUpperCase()+", message: "+colors.bgYellow(result.error.sqlMessage)))
+                    console.error(colors.red(colors.magenta(_config.name_app)+ " Failed Query! "+type.toUpperCase()+", message: "+colors.yellow(result.error.sqlMessage)))
                     return {"status":false,"error":result.error.sqlMessage}
                 }
             }
@@ -117,7 +116,7 @@ const execute_query = async (files_names,type)=>{
         }
     
     }else{
-        console.info(colors.bgMagenta(_config.name_app)+colors.bgCyan(" Info: ")+colors.bgYellow(" No more querys "+type.toUpperCase()+" to running! "))
+        console.info(colors.magenta(_config.name_app)+colors.cyan(" Info: ")+colors.yellow(" No more querys "+type.toUpperCase()+" to running! "))
         return {"status":true, "message":"No more querys "+type.toUpperCase()+" to running!"}
     }
 }
@@ -133,8 +132,12 @@ const updateRecords = async(type,timestamp_val)=>{
 }
 
 const validate_file_name = (file_name)=>{
+    const _error_message = "Migration file name can contain alphabets, numbers, hyphen or underscore and max 200 characters!"
+    if(typeof file_name !== "string" || file_name.length === 0 || file_name.length > 200){
+        return {"status":false,"error":_error_message} 
+    }
     let patt = new RegExp(/^[0-9a-zA-Z-_]+$/)
-    return {"status":patt.test(file_name),"error":" Migration file name can contain alphabets, numbers, hyphen or underscore!"}
+    return {"status":patt.test(file_name),"error":_error_message}
 }
 
 const readFolder = async()=>{
@@ -215,7 +218,7 @@ const  up_migrations_first_time = async()=>{
         if(indexTimestamp == -1){
             files_names.push(file)
         }else{
-            console.info(colors.bgRed("Warning ")+colors.bgYellow("Already exist migration for: ")+colors.bgGreen(file.file_name)+colors.bgBlue(" remove timestamp:"+file.timestamp +" from "+_config.table +" table first!"))
+            console.info(colors.red("Warning ")+colors.yellow("Already exist migration for: ")+colors.green(file.file_name))
         }
         
     }
@@ -228,14 +231,13 @@ const down_migrations = async()=>{
     let timestamps_db = results.rows.map((ele)=>{return ele.timestamp})
     if(timestamps_db.length == 0) return {"status":true,"type":"down","message":"No migrations registered!"}
     const { files, timestamps } = await readFolder()
-        
     for (let index = 0; index < timestamps_db.length; index++) {
         const timestamp_db = timestamps_db[index]
         const indexTimestamp = timestamps.indexOf(timestamp_db)
         if(indexTimestamp> -1){
             files_names.push(files[indexTimestamp])
         }else{
-            return {"status": false, "type": "down", "error": " Migration file: "+timestamp_db+" no found!, remove the timestamp registered from the "+_config.table +" table or recover the file in the migrations folder!" }
+            return {"status":false,"type":"down","error":" Migration file "+timestamp_db+" no found!, remove the timestamp from the "+_config.table +" table or recover the file in the migrations folder!"}
         }
     }
     
@@ -256,7 +258,7 @@ const run_migration_directly = async()=>{
         }else{                
             const result = await run_query(queries[type])
             if(!result.status){
-                console.error(colors.bgRed(colors.bgMagenta(_config.name_app)+ " Failed Query! "+type.toUpperCase()+", message: "+colors.bgYellow(result.error.sqlMessage)))
+                console.error(colors.red(colors.magenta(_config.name_app)+ " Failed Query! "+type.toUpperCase()+", message: "+colors.yellow(result.error.sqlMessage)))
                 return {"status":false,"error":result.error.sqlMessage}
             }else{
                 return {"status":true,"message":"Direct query executed successfully!"}
@@ -274,17 +276,103 @@ const MessageConsoleAction = (queries,type,file_name)=>{
     const description = queries["description"] ?? file_name
     let message_query = " no show "
     if(_config.show_query){ message_query = queries[type] }
-    console.info(colors.bgMagenta(_config.name_app)+colors.bgGreen(" Dispatch: ")+colors.bgBlue(" Type: " +type.toUpperCase())+colors.bgGreen(" Query: ")+colors.bgCyan(message_query)+colors.bgGreen(" Description: ")+colors.bgCyan(description))
+    console.info(colors.magenta(_config.name_app)+colors.green(" Dispatch: ")+colors.blue(" Type: " +type.toUpperCase())+colors.green(" Query: ")+colors.cyan(message_query)+colors.green(" Description: ")+colors.cyan(description))
     return description
 }
 
 const MessageConsoleQueryEmpty = (type,description)=>{ 
-    console.info(colors.bgMagenta(_config.name_app)+colors.bgRed(" Warning: ")+colors.bgYellow(" Query type "+type.toUpperCase()+" is empty! ")+colors.bgGreen(" Description: ")+colors.bgCyan(description))    
+    console.info(colors.magenta(_config.name_app)+colors.red(" Warning: ")+colors.yellow(" Query type "+type.toUpperCase()+" is empty! ")+colors.green(" Description: ")+colors.cyan(description))    
 }
 
 const MessageConsoleQueryError = (type,description)=>{
-    console.error(colors.bgMagenta(_config.name_app)+colors.bgRed(" Warning: Failed Query! "+type.toUpperCase()+", message: The query should be of text type and contain up and down properties in file to migrate!")+colors.bgGreen(" Description: ")+colors.bgCyan(description))
-    console.error(colors.bgMagenta(_config.name_app)+colors.bgRed(" Warning: Fix this file and retry again!"))
+    console.error(colors.magenta(_config.name_app)+colors.red(" Warning: Failed Query! "+type.toUpperCase()+", message: The query should be of text type and contain up and down properties in file to migrate!")+colors.green(" Description: ")+colors.cyan(description))
+    console.error(colors.magenta(_config.name_app)+colors.red(" Warning: Fix this file and retry again!"))
+}
+
+const get_status = async()=>{
+    // obtener listado de migraciones registradas en tabla
+    const results = await run_query("SELECT timestamp FROM "+_config.table+" ORDER BY timestamp ASC LIMIT " + max_count)
+    let timestamps_db = results.rows.map((ele)=>{return ele.timestamp})
+    const { files, timestamps } = await readFolder()
+        
+    const _status_events = {
+        "mig":"migrated",
+        "pen":"pending",
+        "nff":"file-no-found",
+        "eum":"event-up-empty",
+        "edm":"event-down-empty",
+        "und":"undefined"
+    }
+    
+    console.log(colors.green("Start - Read Warnings Files --------------------------------------------------------- " ))
+    
+    for (let index = 0; index < files.length; index++) {
+        const file = files[index]
+        const indexTimestamp = timestamps_db.indexOf(file.timestamp)
+
+        try {
+            const _file = await import(pathToFileURL(path.join(relative_path,file.file_name)))
+            const {description,up,down} = _file.default
+        
+            const _warnings = []
+            let migrated = indexTimestamp> -1 ? _status_events.mig : _status_events.pen 
+            let filename = file.file_name
+
+            if(!up || !up.length){
+                _warnings.push(_status_events.eum)
+            }
+
+            if(!down || !down.length){
+                _warnings.push(_status_events.edm)
+            }
+
+            console.log(colors.cyan("Migration :: "+(index+1)+" "))
+
+            if(_warnings.length){
+                console.log(colors.cyan("Status: ") + colors.red(migrated.toUpperCase()) + colors.yellow(" Warnings: "+colors.red(_warnings.length)+" "))
+            }else{
+                console.log(colors.cyan("Status: ") + colors.magenta(migrated.toUpperCase()))
+            }
+
+            console.log({"file":filename,"status": migrated,"warnings":_warnings,"description":description ? description : ".."})
+        } catch (error) {
+            console.log({"file":index+1,"status": _status_events.und,"warning":"Fail to get file!"})
+        }
+        console.log("\n")
+    }
+    console.log(colors.green("End - Read Warnings Files --------------------------------------------------------- " ))
+
+    console.log(colors.blue("Start - Read Warnings Registered --------------------------------------------------------- " ))
+
+    for (let index = 0; index < timestamps_db.length; index++) {
+        const timestamp_db = timestamps_db[index]
+        const _indexTimestampdb = timestamps.indexOf(timestamp_db)
+        if(_indexTimestampdb=== -1){
+            console.log(colors.blue("Migration"))
+            console.log(colors.cyan("Status: ") + colors.red(_status_events.und.toUpperCase())+colors.yellow(" Warning: "+colors.red(" Migration file "+timestamp_db+" no found!, remove the timestamp from the "+_config.table +" table or recover the file in the migrations folder!")))
+            console.log({"register":timestamp_db,"status":_status_events.und,"warning":_status_events.nff})
+            console.log("\n")
+        }
+
+    }
+
+    console.log(colors.blue("End - Read Warnings Registered --------------------------------------------------------- " ))
+    console.log(colors.yellow ("Start - Read Warnings Repeated --------------------------------------------------------- " ))
+    
+    let frecuency = {}
+    files.forEach(item => {
+        frecuency[item.timestamp] = (frecuency[item.timestamp] || 0) + 1
+    })
+    const repeated = Object.keys(frecuency).filter(k => frecuency[k] > 1)
+    
+    for (let index = 0; index < repeated.length; index++) {
+        const element = repeated[index]
+        console.log( colors.cyan('File repeated: ')+colors.red(element)+colors.yellow(" Warning: "+colors.red(" Migration file "+element+" is repeated!, you should remove the most recent file and redo(npm run db_create name_file_example) the migration file to prevent unexpected errors!")))
+    }
+    console.log(colors.yellow ("End - Read Warnings Repeated --------------------------------------------------------- " ))
+        
+    return {"status":true,"registered":timestamps_db.length,"files":files.length,"repeated":repeated.length}
+
 }
 
 const handle = async()=>{
@@ -293,14 +381,14 @@ const handle = async()=>{
         if(validateFileName.status){ 
             const result = await add_migration()
             if(result.status){
-                console.info(colors.bgMagenta(" >> File Migration: "+colors.bgCyan(result.file_name)+" Path: "+colors.bgGreen(relative_path)+" << "))
+                console.info(colors.magenta(" >> File Migration: "+colors.cyan(result.file_name)+" Path: "+colors.green(relative_path)+" << "))
                 _config.cb(" >> CREATE << ")
             }else{
-                _config.cb(" >> CREATE: "+colors.bgRed("Failed! "+result.error)+" << ")
+                _config.cb(" >> CREATE: "+colors.red("Failed! "+result.error)+" << ")
             }
             return result
         } else{
-            console.error(colors.bgRed(colors.bgMagenta(_config.name_app)+ validateFileName.error))
+            console.error(colors.red(colors.magenta(_config.name_app)+ validateFileName.error))
             _config.cb(" >> CREATE << ")
             return validateFileName
         }
@@ -339,6 +427,15 @@ const handle = async()=>{
             _config.cb(" >> REFRESH << ")
             return {"down":resultdown,"up":resultup}
         }
+
+        if(argv[2] == "status"){
+            const result = await get_status()
+            if(!result.status){
+                return result
+            }
+            _config.cb(" >> STATUS << ")
+            return result
+        }
     }
     
     if (argv[2] && argv[2] == 'run' && argv.length == 5){
@@ -347,11 +444,11 @@ const handle = async()=>{
             _config.cb(" >> DIRECT STRING QUERY << ")
             return result
         }else{
-            console.error(colors.bgMagenta(_config.name_app)+colors.bgRed(" Failed direct Query: Parameter up or down missed >>"))
+            console.error(colors.magenta(_config.name_app)+colors.red(" Failed direct Query: Parameter up or down missed >>"))
             return {"status":false,"error":"Failed direct Query: Parameter up or down missed >>"}
         }
     }
-    console.error(colors.bgMagenta(_config.name_app)+colors.bgRed(" Failed command! "))
+    console.error(colors.magenta(_config.name_app)+colors.red(" Failed command! "))
     return {"status":false,"error":"Invalid command!","message":"Missed or to many parameter?"}
 }
 
