@@ -7,7 +7,7 @@ import { pathToFileURL } from "node:url"
 
 const pathRoot =  path.normalize(path.dirname(process.argv[1]))
 const relative_path = path.join(pathRoot,"migrations")
-let max_count = 999999
+let max_count = 9999
 
 let objectConn = {
     host: 'localhost',
@@ -34,10 +34,11 @@ let pool=null
 
 const makeaDir = async()=>{
     const dirs = await fs.opendir(relative_path).catch((err)=>{
-        console.error("Directory no found",err)
+        console.error(colors.red("Directory no found!: "),err)
     })
     if(!dirs){
         try {
+            console.info(colors.magenta("Making directory.."))
             await fs.mkdir(relative_path,{recursive:true}).catch((err)=>{console.error(err)})
             return {"status":true,"message":"Directory created!"}
         } catch (error) {
@@ -74,7 +75,7 @@ const run_query = async(query)=>{
     return {"status":true,rows,fields}
     })
     .catch((err)=>{ return {"status":false, "error": err} })
-    .finally(()=>{ if(conn && conn.release) conn.release()} )
+    .finally(()=>{ if(conn && conn.release) conn.release()})
     return result
 }
 
@@ -184,7 +185,7 @@ const up_migration = async()=>{
 
     if(max_timestamp == ""){
         console.info({"status":true,"type":"up","error":"No new migrations pending! ","action":"Executig 'npm run db_migrate_all' once command.."})
-        max_count = 99999
+        max_count = 9999
         return await up_migrations_first_time()
     }
 
@@ -192,7 +193,7 @@ const up_migration = async()=>{
     
     for (let index = 0; index < files.length; index++) {
         const file = files[index]
-        if( Number(file.timestamp) > Number(max_timestamp)){
+        if(Number(file.timestamp) > Number(max_timestamp)){
             files_names.push(file)
         }    
     }
@@ -204,7 +205,7 @@ const up_migration = async()=>{
     return await execute_query(files_names,"up")
 }
 
-const  up_migrations_first_time = async()=>{
+const up_migrations_first_time = async()=>{
     const results  = await run_query("SELECT timestamp FROM " +_config.table)
     const files_names = []
     let timestamps_db = results.rows.map(r => r.timestamp)
@@ -371,7 +372,7 @@ const get_status = async()=>{
     }
     console.log(colors.yellow ("End - Read Warnings Repeated --------------------------------------------------------- " ))
         
-    return {"status":true,"registered":timestamps_db.length,"files":files.length,"repeated":repeated.length}
+    return {"status":true,"migrated":timestamps_db.length,"files":files.length,"repeated":repeated.length}
 
 }
 
@@ -437,7 +438,6 @@ const handle = async()=>{
             return result
         }
     }
-    
     if (argv[2] && argv[2] == 'run' && argv.length == 5){
         if(_config.migrations_types.includes(argv[4])){
             const result = await run_migration_directly()

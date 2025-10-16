@@ -3,6 +3,7 @@ import fs from 'node:fs/promises'
 import path from "node:path"
 import { pathToFileURL } from "node:url"
 import colors from "colors"
+import { argv, config } from "node:process"
 
 const file_name = "migrations_config.js"
 const file_package = "package.json"
@@ -12,7 +13,7 @@ const relative_path_migrations = path.join(relative_path_config,"migrations")
 const path_config = path.join(relative_path_config,file_name)
 const path_package = path.join(pathRoot,file_package)
 
-const addFileConfig = async ()=>{
+const addFileConfig = async()=>{
     const data = 
     "import Migration from 'mysql2-migrations'\n"+
     "\n"+
@@ -76,7 +77,7 @@ const addScripstToConfiguration = async()=>{
     }
 }
 
-const init = async ()=>{
+const init = async()=>{
     
     console.info(colors.magenta("⚡️init mysql2-migrations \n"))    
     
@@ -95,7 +96,6 @@ const init = async ()=>{
     }else{
         console.error(colors.red(" Error: "+makeaDirResultMigrations.error))
     }
-
     
     console.info(colors.green(" Add scripts commands to package.."))
     const addScriptsResult = await addScripstToConfiguration()
@@ -119,4 +119,47 @@ const init = async ()=>{
 
     process.exit(0)
 }
-init()
+
+const help = async()=>{
+
+    const configuration = await fs.readFile("./package.json","utf-8")
+    const data = JSON.parse(configuration.toString('utf-8'))
+
+    const _help={
+        "npx mysql2-migrations init":"Create files and initialize configuration environment(execute once time)",
+        "npx mysql2-migrations help":"Show descriptions commands - help",
+        "npm run db_create": "Create file to migrate, use: npm run db_create create_users_table",  
+        "npm run db_refresh": "Undo and redo all migrations (CAUTION DATA LOSS)",
+        "npm run db_migrate_all": "Migrate all files, Execute first time after initialize repository",
+        "npm run db_migrate": "Migrate last file pending",
+        "npm run db_rollback": "Undo latest migration",
+        "npm run db_status": "Check migrations integrity"
+    }
+
+    console.log(colors.cyan("mysql2-migrations v"+data.version))
+    console.table(_help)
+    console.log(colors.yellow("Commands don't works!, reminder attach commands npm(only) in scripts property package.json file (npx mysql2-migrations init)"))
+    console.log(colors.yellow("DB Credentilas must be set in new Migration() instance (see migrations_config.js)"))
+    console.log(colors.green("visit: ")+colors.blue("https://www.npmjs.com/package/mysql2-migrations"))
+    process.exit(0)
+}
+
+const args = {
+    "i":"init",
+    "h":"help"
+}
+
+const handler =()=>{
+    if(argv.length === 3 && process.argv[2] === args.i){
+        init()
+        return
+    }
+    if(argv.length === 3 && process.argv[2] === args.h){
+        help()
+        return
+    }
+    console.log(colors.red("mysql2-migrations : ")+colors.red("Missing parameters?"))
+    console.log(colors.green("type: ")+colors.cyan("npx mysql2-migrations help"))
+}
+
+handler()
