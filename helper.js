@@ -305,7 +305,7 @@ const get_status = async()=>{
         "und":"undefined"
     }
     
-    console.log(colors.green("Start - Read Warnings Files --------------------------------------------------------- " ))
+    console.log(colors.green("⚡️ Start - Read Warnings Files" ))
     
     for (let index = 0; index < files.length; index++) {
         const file = files[index]
@@ -341,9 +341,9 @@ const get_status = async()=>{
         }
         console.log("\n")
     }
-    console.log(colors.green("End - Read Warnings Files --------------------------------------------------------- " ))
+    console.log(colors.green("👍 End - Read Warnings Files" ))
 
-    console.log(colors.blue("Start - Read Warnings Registered --------------------------------------------------------- " ))
+    console.log(colors.blue("⚡️ Start - Read Warnings Registered" ))
 
     for (let index = 0; index < timestamps_db.length; index++) {
         const timestamp_db = timestamps_db[index]
@@ -357,8 +357,8 @@ const get_status = async()=>{
 
     }
 
-    console.log(colors.blue("End - Read Warnings Registered --------------------------------------------------------- " ))
-    console.log(colors.yellow ("Start - Read Warnings Repeated --------------------------------------------------------- " ))
+    console.log(colors.blue("👍 End - Read Warnings Registered" ))
+    console.log(colors.yellow ("⚡️ Start - Read Warnings Repeated" ))
     
     let frecuency = {}
     files.forEach(item => {
@@ -370,7 +370,7 @@ const get_status = async()=>{
         const element = repeated[index]
         console.log( colors.cyan('File repeated: ')+colors.red(element)+colors.yellow(" Warning: "+colors.red(" Migration file "+element+" is repeated!, you should remove the most recent file and redo(npm run db_create name_file_example) the migration file to prevent unexpected errors!")))
     }
-    console.log(colors.yellow ("End - Read Warnings Repeated --------------------------------------------------------- " ))
+    console.log(colors.yellow ("👍 End - Read Warnings Repeated" ))
         
     return {"status":true,"migrated":timestamps_db.length,"files":files.length,"repeated":repeated.length}
 
