@@ -120,12 +120,18 @@
 
 - **too You can also UP or DOWN direct migrations**
     - DIRECT MIGRATIONS WILL NOT BE SAVED IN THE "table_migrations_app" TABLE
-    - example:
-
+    
+    - example type up:
     ```javascript
     node mysql2-migrations/migrations_config.js run 1763854407404_create_users_table.js up
     ```
     <img width="1296" height="275" alt="direct query" src="https://github.com/user-attachments/assets/8d255639-f331-49e9-94a5-95255a33753f" />
+
+    - example type down:
+    ```javascript
+    node mysql2-migrations/migrations_config.js run 1763854407404_create_users_table.js down
+    ```
+    <img width="1345" height="110" alt="direct query down" src="https://github.com/user-attachments/assets/f0d6f34b-fc00-47e8-a35f-a5ec701941f6" />
 
 # 👩‍💻 Add file migrations 
 
