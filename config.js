@@ -158,7 +158,7 @@ const handler =()=>{
         help()
         return
     }
-    console.log(colors.red("mysql2-migrations : ")+colors.red("Missing parameters?"))
+    console.log(colors.red("mysql2-migrations : ")+colors.red("Missing parameter?"))
     console.log(colors.green("type: ")+colors.cyan("npx mysql2-migrations help"))
 }
 
