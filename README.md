@@ -27,6 +27,8 @@
     ```javascript
     npx mysql2-migrations init
     ```
+    <img width="986" height="298" alt="npx init" src="https://github.com/user-attachments/assets/b6f57a02-2161-4325-808b-3cf211a78c18" />
+
 - step 3 (Optional configure environment yourself)
     
     - 1.Create a folder in root app with name "mysql2-migrations"
@@ -77,42 +79,53 @@
     ```javascript
     npm run db_create alter_sales_table
     ```
+    <img width="1304" height="209" alt="db_create" src="https://github.com/user-attachments/assets/eb9ea4d8-138d-4a8c-9988-f3f867e6f4b2" />
+
 - **db_refresh**
     #### Undo and redo all migrations (CAUTION DATA LOSS, It is not recommended to do it ): 
     ```javascript
     npm run db_refresh
     ```
+    <img width="1299" height="467" alt="db_refresh" src="https://github.com/user-attachments/assets/040edc76-a0f8-4334-b9e4-a0f180f72b0e" />
+
 - **db_migrate_all**  
     #### Migrate all files, Execute first time after initialize repository: 
     ```javascript    
     npm run db_migrate_all
     ```
+    <img width="1299" height="367" alt="db_migrate_all" src="https://github.com/user-attachments/assets/bcf22efe-07f6-43ee-8b27-2b6a59983418" />
+
+    <img width="1302" height="195" alt="db_migrate_all_2" src="https://github.com/user-attachments/assets/2378297b-9177-4272-8c77-0d6289a50302" />
 
 - **db_migrate**
     #### Migrate last file pending: 
     ```javascript 
     npm run db_migrate
     ```
+    <img width="1307" height="485" alt="db_migrate" src="https://github.com/user-attachments/assets/b9ce14bd-3f29-42d0-9d26-e856e32ead06" />
 
 - **db_rollback**
     #### Undo latest migration: 
     ```javascript     
     npm run db_rollback
     ```
+    <img width="1303" height="199" alt="db_rollback" src="https://github.com/user-attachments/assets/5c0d6c31-9974-494e-8316-b813dff66ae9" />
 
 - **db_status**
     #### Check migrations integrity: 
     ```javascript     
     npm run db_status
     ```
+    <img width="1301" height="461" alt="db_status" src="https://github.com/user-attachments/assets/75e66978-616b-4235-8198-b14e4358a15d" />
 
 - **too You can also UP or DOWN direct migrations**
     - DIRECT MIGRATIONS WILL NOT BE SAVED IN THE "table_migrations_app" TABLE
     - example:
 
     ```javascript
-    node mysql2-migrations/migrations_config.js run 1667598634512_create_users_table.js up
+    node mysql2-migrations/migrations_config.js run 1763854407404_create_users_table.js up
     ```
+    <img width="1296" height="275" alt="direct query" src="https://github.com/user-attachments/assets/8d255639-f331-49e9-94a5-95255a33753f" />
 
 # 👩‍💻 Add file migrations 
 
