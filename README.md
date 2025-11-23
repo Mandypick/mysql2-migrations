@@ -98,7 +98,7 @@
     ```
     <img width="1299" height="367" alt="db_migrate_all" src="https://github.com/user-attachments/assets/bcf22efe-07f6-43ee-8b27-2b6a59983418" />
 
-    -If already exists
+    ### If already exists:
     <img width="1302" height="195" alt="db_migrate_all_2" src="https://github.com/user-attachments/assets/2378297b-9177-4272-8c77-0d6289a50302" />
 
 - **db_rollback**
@@ -123,15 +123,15 @@
     <img width="1299" height="467" alt="db_refresh" src="https://github.com/user-attachments/assets/040edc76-a0f8-4334-b9e4-a0f180f72b0e" />
 
 - **too You can also UP or DOWN direct migrations**
-    - DIRECT MIGRATIONS WILL NOT BE SAVED IN THE "table_migrations_app" TABLE
+    ### DIRECT MIGRATIONS WILL NOT BE SAVED IN THE "table_migrations_app" TABLE
     
-    - example type up:
+    ### Example type up:
     ```javascript
     node mysql2-migrations/migrations_config.js run 1763854407404_create_users_table.js up
     ```
     <img width="1296" height="275" alt="direct query" src="https://github.com/user-attachments/assets/8d255639-f331-49e9-94a5-95255a33753f" />
 
-    - example type down:
+    ### Example type down:
     ```javascript
     node mysql2-migrations/migrations_config.js run 1763854407404_create_users_table.js down
     ```
