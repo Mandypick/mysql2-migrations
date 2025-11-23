@@ -27,7 +27,7 @@
     ```javascript
     npx mysql2-migrations init
     ```
-    <img width="986" height="298" alt="npx init" src="https://github.com/user-attachments/assets/b6f57a02-2161-4325-808b-3cf211a78c18" />
+    <img width="982" height="288" alt="npx init" src="https://github.com/user-attachments/assets/c75e6312-ba06-4a2e-9111-6754fa458c09" />
 
 - step 3 (Optional configure environment yourself)
     
@@ -79,48 +79,49 @@
     ```javascript
     npm run db_create alter_sales_table
     ```
-    <img width="1304" height="209" alt="db_create" src="https://github.com/user-attachments/assets/eb9ea4d8-138d-4a8c-9988-f3f867e6f4b2" />
+    <img width="1184" height="209" alt="db_create" src="https://github.com/user-attachments/assets/aa860ee4-f0e3-40ac-8a93-685256baed81" />
 
     ### Edit migration file with query
-    <img width="973" height="398" alt="edit migration" src="https://github.com/user-attachments/assets/be1860ea-8270-4ff3-9bef-f654e4c55750" />
+    <img width="614" height="398" alt="edit migration" src="https://github.com/user-attachments/assets/89561c02-5e1f-4846-9b03-734b191f7ae5" />
 
+    
 - **db_migrate**
     #### Migrate last file pending: 
     ```javascript 
     npm run db_migrate
     ```
-    <img width="1307" height="485" alt="db_migrate" src="https://github.com/user-attachments/assets/b9ce14bd-3f29-42d0-9d26-e856e32ead06" />
+    <img width="767" height="485" alt="db_migrate" src="https://github.com/user-attachments/assets/23336f3a-500c-40af-ae90-243e25df3330" />
 
 - **db_migrate_all**  
     #### Migrate all files, Execute first time after initialize repository: 
     ```javascript    
     npm run db_migrate_all
     ```
-    <img width="1299" height="367" alt="db_migrate_all" src="https://github.com/user-attachments/assets/bcf22efe-07f6-43ee-8b27-2b6a59983418" />
+    <img width="753" height="367" alt="db_migrate_all" src="https://github.com/user-attachments/assets/1330168f-44ae-478c-805a-88eea48408da" />
 
     ### If already exists:
-    <img width="1302" height="195" alt="db_migrate_all_2" src="https://github.com/user-attachments/assets/2378297b-9177-4272-8c77-0d6289a50302" />
+    <img width="750" height="195" alt="db_migrate_all_2" src="https://github.com/user-attachments/assets/3f7904c6-3747-42c0-9e9b-f2c671db6050" />
 
 - **db_rollback**
     #### Undo latest migration: 
     ```javascript     
     npm run db_rollback
     ```
-    <img width="1303" height="199" alt="db_rollback" src="https://github.com/user-attachments/assets/5c0d6c31-9974-494e-8316-b813dff66ae9" />
+    <img width="798" height="199" alt="db_rollback" src="https://github.com/user-attachments/assets/ab2ec33a-02b9-463f-8852-f269c17949e6" />
 
 - **db_status**
     #### Check migrations integrity: 
     ```javascript     
     npm run db_status
     ```
-    <img width="1301" height="461" alt="db_status" src="https://github.com/user-attachments/assets/75e66978-616b-4235-8198-b14e4358a15d" />
+    <img width="699" height="461" alt="db_status" src="https://github.com/user-attachments/assets/fd57173b-2b46-4527-9d4d-ae5fa8f6eb40" />
 
 - **db_refresh**
     #### Undo and redo all migrations (CAUTION DATA LOSS, It is not recommended to do it ): 
     ```javascript
     npm run db_refresh
     ```
-    <img width="1299" height="467" alt="db_refresh" src="https://github.com/user-attachments/assets/040edc76-a0f8-4334-b9e4-a0f180f72b0e" />
+    <img width="792" height="467" alt="db_refresh" src="https://github.com/user-attachments/assets/cc2a30be-65f0-42bf-9b4d-08961fb88a92" />
 
 - **too You can also UP or DOWN direct migrations**
     ### DIRECT MIGRATIONS WILL NOT BE SAVED IN THE "table_migrations_app" TABLE
@@ -129,13 +130,13 @@
     ```javascript
     node mysql2-migrations/migrations_config.js run 1763854407404_create_users_table.js up
     ```
-    <img width="1296" height="275" alt="direct query" src="https://github.com/user-attachments/assets/8d255639-f331-49e9-94a5-95255a33753f" />
+    <img width="1158" height="275" alt="direct query" src="https://github.com/user-attachments/assets/71332575-8874-4ff0-8766-50f4cb78d374" />
 
     ### Example type down:
     ```javascript
     node mysql2-migrations/migrations_config.js run 1763854407404_create_users_table.js down
     ```
-    <img width="1345" height="110" alt="direct query down" src="https://github.com/user-attachments/assets/f0d6f34b-fc00-47e8-a35f-a5ec701941f6" />
+    <img width="1175" height="110" alt="direct query down" src="https://github.com/user-attachments/assets/58d60c16-57d2-4cd2-93c0-5a82ab057a84" />
 
 # 👩‍💻 Add file migrations 
 
