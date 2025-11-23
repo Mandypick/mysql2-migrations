@@ -81,7 +81,7 @@
     ```
     <img width="1304" height="209" alt="db_create" src="https://github.com/user-attachments/assets/eb9ea4d8-138d-4a8c-9988-f3f867e6f4b2" />
 
-    ### Edit file migration with query
+    ### Edit migration file with query
     <img width="973" height="398" alt="edit migration" src="https://github.com/user-attachments/assets/be1860ea-8270-4ff3-9bef-f654e4c55750" />
 
 - **db_migrate**
@@ -91,28 +91,30 @@
     ```
     <img width="1307" height="485" alt="db_migrate" src="https://github.com/user-attachments/assets/b9ce14bd-3f29-42d0-9d26-e856e32ead06" />
 
-    - **db_migrate_all**  
+- **db_migrate_all**  
     #### Migrate all files, Execute first time after initialize repository: 
     ```javascript    
     npm run db_migrate_all
     ```
     <img width="1299" height="367" alt="db_migrate_all" src="https://github.com/user-attachments/assets/bcf22efe-07f6-43ee-8b27-2b6a59983418" />
+
+    -If already exists
     <img width="1302" height="195" alt="db_migrate_all_2" src="https://github.com/user-attachments/assets/2378297b-9177-4272-8c77-0d6289a50302" />
 
-    - **db_rollback**
+- **db_rollback**
     #### Undo latest migration: 
     ```javascript     
     npm run db_rollback
     ```
     <img width="1303" height="199" alt="db_rollback" src="https://github.com/user-attachments/assets/5c0d6c31-9974-494e-8316-b813dff66ae9" />
 
-    - **db_status**
+- **db_status**
     #### Check migrations integrity: 
     ```javascript     
     npm run db_status
     ```
     <img width="1301" height="461" alt="db_status" src="https://github.com/user-attachments/assets/75e66978-616b-4235-8198-b14e4358a15d" />
-    
+
 - **db_refresh**
     #### Undo and redo all migrations (CAUTION DATA LOSS, It is not recommended to do it ): 
     ```javascript
