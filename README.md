@@ -138,42 +138,6 @@
     ```
     <img width="1175" height="110" alt="direct query down" src="https://github.com/user-attachments/assets/58d60c16-57d2-4cd2-93c0-5a82ab057a84" />
 
-# 👩‍💻 Add file migrations 
-
-- Add file to migrate:
-
-    ```javascript
-    npm run db_create create_users_table 
-    ```
- - Go to "migrations" folder and edit file with query(should contain up and down query or only up):
-    
-    ```javascript
-    export default {
-        "description":"Create Users Table",
-        "up":
-            `
-            CREATE TABLE users(
-                user_id BIGINT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
-                name VARCHAR(100) NOT NULL,
-                surname VARCHAR(100) NOT NULL,
-                created_at DATETIME(6) NOT NULL,
-                updated_at DATETIME(6) NOT NULL,
-                PRIMARY KEY (user_id),
-                UNIQUE INDEX user_id_UNIQUE (user_id ASC) VISIBLE)
-            `
-        ,
-        "down":"DROP TABLE users"
-    }
-    ```
-
-# ⚡️ Run migrations
-
-- Finally, run the migration with the command:
-
-```javascript
-npm run db_migrate
-```
-
 # 🔥 Others
 
 - Help
