@@ -99,7 +99,7 @@
     <img width="1110" height="220" alt="db_migrate_index" src="https://github.com/user-attachments/assets/6db6ef37-ac7b-4cac-994a-d6729b8ce788" />
 
 - **db_migrate_all**  
-    #### Migrate all files, Execute first time after initialize repository: 
+    #### Migrate all files pending: 
     ```javascript
     npm run db_migrate_all
     ```
