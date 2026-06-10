@@ -44,7 +44,7 @@
     db_query.port = 3306
     db_query.name_table_migrations = "table_migrations_app" // two characters minimum
     db_query.show_query = true
-    db_query.skip_migration_error = true // use for skip some migration file with some error and continue with the rest of migration files, but this can cause problems if the error is in the query and not in the migration file, example: when use migrations files without "down" query
+    db_query.skip_migration_error = true // use for skip some migration file with some error and continue with the rest of migration files, but this can cause          problems if the error is in the query and not in the migration file, example: when use migrations files without "down" query
     db_query.show_depuration = true // show depuration on finalize migration, recommended
     db_query.start()
     ```
@@ -96,7 +96,7 @@
     ```javascript
     npm run db_migrate <index>
     ```
-    <img width="1110" height="220" alt="db_migrate_index" src="https://github.com/user-attachments/assets/6db6ef37-ac7b-4cac-994a-d6729b8ce788" />
+    <img width="930" height="220" alt="db_migrate_index" src="https://github.com/user-attachments/assets/ae28707f-f965-4694-921c-8fd3649967ea" />
 
 - **db_migrate_all**  
     #### Migrate all files pending: 
@@ -119,8 +119,8 @@
     ```javascript
     npm run db_rollback <index>
     ```
-    <img width="1108" height="209" alt="db_rollback_index" src="https://github.com/user-attachments/assets/1e4c153c-186e-4fa9-bf3b-ef756abcca72" />
-    
+    <img width="937" height="209" alt="db_rollback_index" src="https://github.com/user-attachments/assets/ca92bf1f-49f1-4307-a8a4-9b3f3ebbe179" />
+
 - **db_status**
     #### Check migrations integrity, check indexes of pending and executed migrations: 
     ```javascript
