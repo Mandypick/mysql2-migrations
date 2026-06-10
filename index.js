@@ -13,7 +13,7 @@ export default class Migration {
         this.name_app = os.hostname() || os.userInfo().username || "Sabueso",
         this.name_table_migrations = "table_migrations_app",
         this.show_query=true,
-        this.skip_migration_error=false,
+        this.skip_migration_error=true,
         this.show_depuration=true
     }
     start= async()=>{
