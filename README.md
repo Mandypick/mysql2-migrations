@@ -92,7 +92,6 @@
     ```
     <img width="767" height="485" alt="db_migrate" src="https://github.com/user-attachments/assets/23336f3a-500c-40af-ae90-243e25df3330" />
 
-- **db_migrate <index>**
     #### Migrate file with index:
     ```javascript
     npm run db_migrate <index>
@@ -116,7 +115,6 @@
     ```
     <img width="798" height="199" alt="db_rollback" src="https://github.com/user-attachments/assets/ab2ec33a-02b9-463f-8852-f269c17949e6" />
 
-- **db_rollback <index>**
     #### Undo migration with index: 
     ```javascript
     npm run db_rollback <index>
