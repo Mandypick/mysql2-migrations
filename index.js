@@ -4,7 +4,6 @@ import __query from "./helper.js"
 import os from "os"
 
 export default class Migration {
-    
     constructor(){
         this.host= 'localhost',
         this.port = 3306
@@ -17,7 +16,6 @@ export default class Migration {
         this.skip_migration_error=false,
         this.show_depuration=true
     }
-
     start= async()=>{
         const result = await __query({
             "host": this.host,
@@ -30,14 +28,9 @@ export default class Migration {
             "migrations_types": ["up","down"],
             "show_query": typeof this.show_query === "boolean" ? this.show_query : false,
             "skip_migration_error": typeof this.skip_migration_error === "boolean" ? this.skip_migration_error : false,
-            "cb":(messageEvent="")=>{
-                console.info(colors.cyan(colors.magenta(this.name_app)+" Command "+colors.magenta(messageEvent)+" Finished! "))
-            }
+            "cb":(messageEvent="")=>{ console.info(colors.cyan(colors.magenta(this.name_app)+" Command "+colors.magenta(messageEvent)+" Finished! "))}
         })
-        if( typeof this.show_depuration === "boolean" && this.show_depuration){
-            console.info(colors.cyan("mysql2-migrations log: "),result)
-        }
+        if( typeof this.show_depuration === "boolean" && this.show_depuration){console.info(colors.cyan("mysql2-migrations log: "),result)}
         process.exit(0)
     }
-
 }

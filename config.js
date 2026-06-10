@@ -58,18 +58,12 @@ const addScripstToConfiguration = async()=>{
         "db_rollback": "node mysql2-migrations/migrations_config.js down",
         "db_status": "node mysql2-migrations/migrations_config.js status"
     }
-
     if(data.scripts){
-        scripts = {
-            ...data.scripts,
-            ...new_scripts
-        }
+        scripts = {...data.scripts,...new_scripts}
     }else{
         scripts = new_scripts
     }   
-
     const newData = JSON.stringify({...data,"scripts":{ ...scripts }},null,2)
-    
     try{
         await fs.writeFile(path_package,newData,"utf-8")
         return {"status":true,"file_name":file_package}
@@ -79,9 +73,7 @@ const addScripstToConfiguration = async()=>{
 }
 
 const init = async()=>{
-    
     console.info(colors.magenta("⚡️init mysql2-migrations \n"))    
-    
     console.info(colors.green(" Creating config directory.."))
     const makeaDirResultConfig = await makeaDirConfig(relative_path_config)
     if(makeaDirResultConfig.status){
@@ -89,7 +81,6 @@ const init = async()=>{
     }else{
         console.error(colors.red(" Error: "+makeaDirResultConfig.error))
     }
-
     console.info(colors.green(" Creating migrations directory.."))
     const makeaDirResultMigrations = await makeaDirConfig(relative_path_migrations)
     if(makeaDirResultMigrations.status){
@@ -97,7 +88,6 @@ const init = async()=>{
     }else{
         console.error(colors.red(" Error: "+makeaDirResultMigrations.error))
     }
-    
     console.info(colors.green(" Add scripts commands to package.."))
     const addScriptsResult = await addScripstToConfiguration()
     if(addScriptsResult.status){
@@ -105,7 +95,6 @@ const init = async()=>{
     }else{
         console.error(colors.red(" Error: "+addScriptsResult.error))
     }
-
     console.info( colors.green(" Creating file config.."))
     if(makeaDirResultConfig.status){
         const resultAddFileConfig = await addFileConfig()
@@ -117,15 +106,12 @@ const init = async()=>{
     }else{
         console.error(colors.red(" Error:  Config directory not found!"))
     }
-
     process.exit(0)
 }
 
 const help = async()=>{
-
     const configuration = await fs.readFile("./package.json","utf-8")
     const data = JSON.parse(configuration.toString('utf-8'))
-
     const _help={
         "npx mysql2-migrations init":"Create files and initialize configuration environment(overwrite current configuration)",
         "npx mysql2-migrations help":"Show descriptions commands - help",
@@ -138,20 +124,14 @@ const help = async()=>{
         "npm run db_rollback <index>": "Undo migration with index, use: npm run db_rollback 0 (index starts from 0)",
         "npm run db_status": "Check migrations integrity, check indexes of pending and executed migrations"
     }
-
     console.log(colors.cyan("mysql2-migrations v"+data.version))
     console.table(_help)
-    console.log(colors.yellow("Commands don't works!, reminder attach commands npm(only) in scripts property package.json file (npx mysql2-migrations init)"))
+    console.log(colors.yellow("Commands don't works!, reminder attach commands npm(only) in scripts property package.json file (run 'npx mysql2-migrations init')"))
     console.log(colors.yellow("DB Credentilas must be set in new Migration() instance (see migrations_config.js)"))
     console.log(colors.green("visit: ")+colors.blue("https://www.npmjs.com/package/mysql2-migrations"))
     process.exit(0)
 }
-
-const args = {
-    "i":"init",
-    "h":"help"
-}
-
+const args = {"i":"init","h":"help"}
 const handler =()=>{
     if(argv.length === 3 && process.argv[2] === args.i){
         init()
@@ -164,5 +144,4 @@ const handler =()=>{
     console.log(colors.red("mysql2-migrations : ")+colors.red("Missing parameter?"))
     console.log(colors.green("type: ")+colors.cyan("npx mysql2-migrations help"))
 }
-
 handler()
