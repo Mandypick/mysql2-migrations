@@ -96,7 +96,7 @@
     ```javascript
     npm run db_migrate <index>
     ```
-    <img width="767" height="485" alt="db_migrate" src="https://github.com/user-attachments/assets/23336f3a-500c-40af-ae90-243e25df3330" />
+    <img width="1110" height="220" alt="db_migrate_index" src="https://github.com/user-attachments/assets/6db6ef37-ac7b-4cac-994a-d6729b8ce788" />
 
 - **db_migrate_all**  
     #### Migrate all files, Execute first time after initialize repository: 
@@ -119,8 +119,8 @@
     ```javascript
     npm run db_rollback <index>
     ```
-    <img width="798" height="199" alt="db_rollback" src="https://github.com/user-attachments/assets/ab2ec33a-02b9-463f-8852-f269c17949e6" />
-
+    <img width="1108" height="209" alt="db_rollback_index" src="https://github.com/user-attachments/assets/1e4c153c-186e-4fa9-bf3b-ef756abcca72" />
+    
 - **db_status**
     #### Check migrations integrity, check indexes of pending and executed migrations: 
     ```javascript
