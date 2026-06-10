@@ -203,7 +203,7 @@ const up_migration_to_index = async(index)=>{
     if(file){
         return await execute_query([file],"up")
     }
-    return {"status":false,"type":"up","error":" Migration file "+index+" no found!"}
+    return {"status":false,"type":"up","error":" Migration file index "+index+" no found!"}
 }
 
 const down_migration_to_index = async(index)=>{
@@ -212,7 +212,7 @@ const down_migration_to_index = async(index)=>{
     if(file){
         return await execute_query([file],"down")
     }
-    return {"status":false,"type":"down","error":" Migration file "+index+" no found!"}
+    return {"status":false,"type":"down","error":" Migration file index "+index+" no found!"}
 }
 
 const run_migration_directly = async()=>{

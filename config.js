@@ -131,7 +131,7 @@ const help = async()=>{
         "npx mysql2-migrations help":"Show descriptions commands - help",
         "npm run db_create <name>": "Create file to migrate, use: npm run db_create create_example_table",  
         "npm run db_refresh": "Undo and redo all migrations (CAUTION DATA LOSS)",
-        "npm run db_migrate_all": "Migrate all files, Execute first time after initialize repository",
+        "npm run db_migrate_all": "Migrate all files pending",
         "npm run db_migrate": "Migrate last file pending",
         "npm run db_migrate <index>": "Migrate file with index, use: npm run db_migrate 0 (index starts from 0)",
         "npm run db_rollback": "Undo latest migration",
