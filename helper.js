@@ -225,6 +225,7 @@ const run_migration_directly = async()=>{
     if(typeof (queries[type]) == "string"){
         if(!queries[type].length){
             MessageConsoleQueryEmpty(type,description)
+            return {"status":false,"message":"Direct query executed successfully!","warning":"Query type "+type.toUpperCase()+" is empty!"}
         }else{                
             const result = await run_query(queries[type])
             if(!result.status){
@@ -238,7 +239,6 @@ const run_migration_directly = async()=>{
         MessageConsoleQueryError(type,description)
         return {"status":false,"error":"Failed Query: "+type.toUpperCase()+", Query type not supported!"}
     }
-
 }
 
 const MessageConsoleAction = (queries,type,file_name,index=-1)=>{

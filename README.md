@@ -92,7 +92,7 @@
     ```
     <img width="767" height="485" alt="db_migrate" src="https://github.com/user-attachments/assets/23336f3a-500c-40af-ae90-243e25df3330" />
 
-    #### Migrate file with index:
+    #### Migrate file with index: (check index with "npm run db_status")
     ```javascript
     npm run db_migrate <index>
     ```
@@ -115,7 +115,7 @@
     ```
     <img width="798" height="199" alt="db_rollback" src="https://github.com/user-attachments/assets/ab2ec33a-02b9-463f-8852-f269c17949e6" />
 
-    #### Undo migration with index: 
+    #### Undo migration with index: (check index with "npm run db_status")
     ```javascript
     npm run db_rollback <index>
     ```
@@ -137,16 +137,18 @@
 
 - **too You can also UP or DOWN direct migrations**
     ### DIRECT MIGRATIONS WILL NOT BE SAVED IN THE "table_migrations_app" TABLE
-    
+    ### Don't mixed direct migrations with stored migrations in database
+    ### Use this function only for execute some querys that are not necessary to be stored in the database and that you are sure that will not cause problems in the future.
+    ### This file name is example(image), dont use timestamp, you can to use unformatted names in files: example: "direct_create_users_table.js"
     ### Example type up:
     ```javascript
-    node mysql2-migrations/migrations_config.js run 1763854407404_create_users_table.js up
+    node mysql2-migrations/migrations_config.js run direct_create_users_table.js up
     ```
     <img width="1158" height="275" alt="direct query" src="https://github.com/user-attachments/assets/71332575-8874-4ff0-8766-50f4cb78d374" />
 
     ### Example type down:
     ```javascript
-    node mysql2-migrations/migrations_config.js run 1763854407404_create_users_table.js down
+    node mysql2-migrations/migrations_config.js run direct_create_users_table.js down
     ```
     <img width="1175" height="110" alt="direct query down" src="https://github.com/user-attachments/assets/58d60c16-57d2-4cd2-93c0-5a82ab057a84" />
 
