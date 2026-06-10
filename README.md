@@ -6,7 +6,6 @@
 
 - This package must be used with MODULE TYPE IMPORT AND FROM
 - Set config on package.json "type": "module"
-- NO compatible with MODULE.EXPORT AND REQUIRE
 
 # 🧠 Configuration
 
@@ -45,6 +44,7 @@
     db_query.port = 3306
     db_query.name_table_migrations = "table_migrations_app" // two characters minimum
     db_query.show_query = true
+    db_query.skip_migration_error = true // use for skip some migration file with some error and continue with the rest of migration files, but this can cause problems if the error is in the query and not in the migration file, example: when use migrations files without "down" query
     db_query.show_depuration = true // show depuration on finalize migration, recommended
     db_query.start()
     ```
@@ -87,14 +87,21 @@
     
 - **db_migrate**
     #### Migrate last file pending: 
-    ```javascript 
+    ```javascript
     npm run db_migrate
+    ```
+    <img width="767" height="485" alt="db_migrate" src="https://github.com/user-attachments/assets/23336f3a-500c-40af-ae90-243e25df3330" />
+
+- **db_migrate <index>**
+    #### Migrate file with index:
+    ```javascript
+    npm run db_migrate <index>
     ```
     <img width="767" height="485" alt="db_migrate" src="https://github.com/user-attachments/assets/23336f3a-500c-40af-ae90-243e25df3330" />
 
 - **db_migrate_all**  
     #### Migrate all files, Execute first time after initialize repository: 
-    ```javascript    
+    ```javascript
     npm run db_migrate_all
     ```
     <img width="753" height="367" alt="db_migrate_all" src="https://github.com/user-attachments/assets/1330168f-44ae-478c-805a-88eea48408da" />
@@ -104,14 +111,21 @@
 
 - **db_rollback**
     #### Undo latest migration: 
-    ```javascript     
+    ```javascript
     npm run db_rollback
     ```
     <img width="798" height="199" alt="db_rollback" src="https://github.com/user-attachments/assets/ab2ec33a-02b9-463f-8852-f269c17949e6" />
 
+- **db_rollback <index>**
+    #### Undo migration with index: 
+    ```javascript
+    npm run db_rollback <index>
+    ```
+    <img width="798" height="199" alt="db_rollback" src="https://github.com/user-attachments/assets/ab2ec33a-02b9-463f-8852-f269c17949e6" />
+
 - **db_status**
-    #### Check migrations integrity: 
-    ```javascript     
+    #### Check migrations integrity, check indexes of pending and executed migrations: 
+    ```javascript
     npm run db_status
     ```
     <img width="699" height="461" alt="db_status" src="https://github.com/user-attachments/assets/fd57173b-2b46-4527-9d4d-ae5fa8f6eb40" />

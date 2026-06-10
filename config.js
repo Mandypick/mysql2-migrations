@@ -25,6 +25,7 @@ const addFileConfig = async()=>{
     "db_query.port = 3306\n"+
     'db_query.name_table_migrations = "table_migrations_app"\n'+
     "db_query.show_query = true\n"+
+    "db_query.skip_migration_error = true\n"+
     "db_query.show_depuration = true\n"+
     "db_query.start()\n";
     
@@ -126,14 +127,16 @@ const help = async()=>{
     const data = JSON.parse(configuration.toString('utf-8'))
 
     const _help={
-        "npx mysql2-migrations init":"Create files and initialize configuration environment(execute once time)",
+        "npx mysql2-migrations init":"Create files and initialize configuration environment(execute once time), executed twice will overwrite the config file and add scripts to package.json",
         "npx mysql2-migrations help":"Show descriptions commands - help",
-        "npm run db_create": "Create file to migrate, use: npm run db_create create_users_table",  
+        "npm run db_create <name>": "Create file to migrate, use: npm run db_create create_example_table",  
         "npm run db_refresh": "Undo and redo all migrations (CAUTION DATA LOSS)",
         "npm run db_migrate_all": "Migrate all files, Execute first time after initialize repository",
         "npm run db_migrate": "Migrate last file pending",
+        "npm run db_migrate <index>": "Migrate file with index, use: npm run db_migrate 0 (index starts from 0, if index is not provided, it will migrate the next pending file)",
         "npm run db_rollback": "Undo latest migration",
-        "npm run db_status": "Check migrations integrity"
+        "npm run db_rollback <index>": "Undo migration with index, use: npm run db_rollback 0 (index starts from 0, if index is not provided, it will undo the latest migration)",
+        "npm run db_status": "Check migrations integrity, check indexes of pending and executed migrations"
     }
 
     console.log(colors.cyan("mysql2-migrations v"+data.version))

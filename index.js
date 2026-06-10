@@ -14,6 +14,7 @@ export default class Migration {
         this.name_app = os.hostname() || os.userInfo().username || "Sabueso",
         this.name_table_migrations = "table_migrations_app",
         this.show_query=true,
+        this.skip_migration_error=false,
         this.show_depuration=true
     }
 
@@ -28,6 +29,7 @@ export default class Migration {
             "table": (typeof this.name_table_migrations === "string" && this.name_table_migrations.length >= 2 && this.name_table_migrations.length <= 60) ? this.name_table_migrations : "table_migrations_app",
             "migrations_types": ["up","down"],
             "show_query": typeof this.show_query === "boolean" ? this.show_query : false,
+            "skip_migration_error": typeof this.skip_migration_error === "boolean" ? this.skip_migration_error : false,
             "cb":(messageEvent="")=>{
                 console.info(colors.cyan(colors.magenta(this.name_app)+" Command "+colors.magenta(messageEvent)+" Finished! "))
             }
