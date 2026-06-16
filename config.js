@@ -110,8 +110,13 @@ const init = async()=>{
 }
 
 const help = async()=>{
-    const configuration = await fs.readFile("./package.json","utf-8")
-    const data = JSON.parse(configuration.toString('utf-8'))
+    const configuration = ""
+    const data = {"version":"0.0.0"}
+    try{ 
+        configuration = await fs.readFile("./node_modules/mysql2-migrations/package.json","utf-8")
+        data = JSON.parse(configuration.toString('utf-8'))
+    }catch(err){}
+    
     const _help={
         "npx mysql2-migrations init":"Create files and initialize configuration environment(overwrite current configuration)",
         "npx mysql2-migrations help":"Show descriptions commands - help",

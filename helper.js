@@ -350,7 +350,7 @@ const handle = async()=>{
         }
         if(argv[2] == "migrate"){
             const result = await up_migrations_first_time()
-            _config.cb(" >> MIGRATE FIRST TIME << ")
+            _config.cb(" >> MIGRATE ALL << ")
             return result
         }
         if(argv[2] == "refresh"){
@@ -374,7 +374,7 @@ const handle = async()=>{
             return result
         }
     }
-    if( (argv[2] == "down" || argv[2] == "up") && argv.length == 4){
+    if((argv[2] == "down" || argv[2] == "up") && argv.length == 4){
         if(argv[2] == "up" && !isNaN(argv[3])){
             const result = await up_migration_to_index(Number(argv[3]))
             _config.cb(" >> MIGRATE TO INDEX << ")
@@ -387,7 +387,7 @@ const handle = async()=>{
         }
         return {"status":false,"error":"Failed command!","message":"Invalid command! Missed or invalid index parameter, it should be a number!"}
     }
-    if (argv[2] && argv[2] == 'run' && argv.length == 5){
+    if(argv[2] && argv[2] == 'run' && argv.length == 5){
         if(_config.migrations_types.includes(argv[4])){
             const result = await run_migration_directly()
             _config.cb(" >> DIRECT STRING QUERY << ")
