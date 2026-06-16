@@ -44,7 +44,7 @@
     db_query.port = 3306
     db_query.name_table_migrations = "table_migrations_app" // two characters minimum
     db_query.show_query = true
-    db_query.skip_migration_error = true // use for skip some migration file with some error and continue with the rest of migration files, but this can cause          problems if the error is in the query and not in the migration file, example: when use migrations files without "down" query
+    db_query.skip_migration_error = true // use for skip some migration file with some error and continue with the rest of migration files, but this can cause problems if the error is in the query and not in the migration file, example: when use migrations files without "down" query
     db_query.show_depuration = true // show depuration on finalize migration, recommended
     db_query.start()
     ```
