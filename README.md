@@ -210,7 +210,7 @@
 
     #### Migrate index file: 
     ```javascript
-    const params = {'command':'db_migrate','indexMigration': 0,'nameFileMigration':null }
+    const params = {'command':'db_migrate','indexMigration': 15,'nameFileMigration':null }
     const result= await db_query.start(params)
     console.log('migration batch command result :'+result)
     ```
@@ -236,7 +236,7 @@
 
     #### Undo migration index: 
     ```javascript
-    const params = {'command':'db_rollback','indexMigration':2,'nameFileMigration':null }
+    const params = {'command':'db_rollback','indexMigration':15,'nameFileMigration':null }
     const result = await db_query.start(params)
     console.info('migration batch command result: '+result)
     ```
