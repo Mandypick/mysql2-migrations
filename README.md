@@ -1,6 +1,6 @@
-#  Mysql2 Migrations :: Type module projects
+#  Mysql2 CLI and Batch Migrations :: Type module projects
     
-- Create and manage migrations with mysql2 from repositories with configuration "TYPE MODULE"
+- Create and manage cli and batch migrations with mysql2 from repositories with configuration "TYPE MODULE"
 
 # 📫 Disclaimer
 
@@ -32,31 +32,27 @@
     
     - 1. Create a folder in the root app with name "mysql2-migrations"
     - 2. Create a "migrations_config.js" file in the "mysql2-migrations" folder with the following configuration (add your db credentials here)
-    - Using Migration as a unique instance to cli
+    - Using Migration as a unique instance to cli (operation from console)
     
     ```javascript
-    import Migration from 'mysql2-migrations'
-
-    const db_query = new Migration()
-    db_query.database = "test"              // target database name
-    db_query.user = "root"                  // mysql user with permissions to CREATE/ALTER/DROP
-    db_query.password = "password"          // mysql user password
-    db_query.host = "127.0.0.1"             // mysql server host
-    db_query.port = 3306                    // mysql server port
-    db_query.name_table_migrations = "table_migrations_app" // table used to track executed migrations (min 2, max 60 chars, only letters/numbers/underscore)
-    db_query.show_query = true              // print the SQL being executed for each migration file (useful for debugging)
-    db_query.skip_migration_error = true    // continue running the remaining migration files even if one query fails
-                                             // (use with caution: this can hide real errors, e.g. migration files with an empty "down" query)
-    db_query.show_depuration = true         // log the final result object returned by the CLI command (recommended)
-    db_query.exit_process = true            // terminate the node process when the command finishes (default behavior for CLI usage)
-                                             // set to false when using Migration as an instance inside another app/server, so it doesn't kill your process
-    db_query.close_pool = false             // close the internal mysql2 connection pool when the command finishes
-                                             // set to true together with exit_process=false if you run Migration once and don't want the pool kept open in memory
-    db_query.start()                        // runs the command received from process.argv (create, up, down, migrate, refresh, status, run)
+    import { MigrationCLI } from 'mysql2-migrations'
+    
+    const db_query = new MigrationCLI({
+        "host": "127.0.0.1",     // mysql server host
+        "port": 3306,            // mysql server port
+        "user": "root",          // mysql user with permissions to CREATE/ALTER/DROP
+        "password": "password",  // mysql user password
+        "database_name": "test_db", // target database name
+        "table_migrations_name": "table_migrations_app",  // table used to track executed migrations (min 2, max 60 chars, only letters/numbers/underscore)
+        "show_qery": false,      // print the SQL being executed for each migration file (useful for debugging)
+        "skip_migration_error": true,  // continue running the remaining migration files even if one query fails, this can hide real errors, e.g. migration files with an empty "down" or "up" query
+        "show_depuration": true  // log the final result object returned by the CLI command (recommended)
+    });
+    db_query.start();
     ```
 
     - 3. Create a "migrations_config_batch.js" file in the "mysql2-migrations" folder with the following configuration (add your db credentials here) 
-    - Using MigrationBatch as a reusable instance to node
+    - Using MigrationBatch as a reusable instance to node (operation from commonjs file)
 
     ```javascript
     import { MigrationBatch } from 'mysql2-migrations'
@@ -73,19 +69,25 @@
     db_query.skip_migration_error = true
     db_query.show_depuration = true
 
-    //example usage:
+    // export intance to usage from another common library or pipeline sequence
+    export default db_query
+
+    //example usage in another function:
     const params1 = {'command':'db_migrate_all','indexMigration':null,'nameFileMigration':null }
+    const result1 = await db_query.start(params1).then((result)=>{
+        // to do some with result
+        // return res.status(200).json({ status: true, message: 'mysql2-migrations migration report', result });
+    }).catch((e)=>{ 
+        // to do some with error
+        // res.status(500).json({message: 'Error to execute mysql2-migrations migration' });
+    })
     const params2 = {'command':'db_migrate','indexMigration':null,'nameFileMigration':'example_migration_file.js' }
-    const params3 = {'command':'db_rollback','indexMigration':2,'nameFileMigration':null }
-    const result1 = await db_query.start(params1)
     const result2 = await db_query.start(params2)
+    
+    const params3 = {'command':'db_rollback','indexMigration':2,'nameFileMigration':null }
     const result3 = await db_query.start(params3)
-    console.log('migration batch command result 1: '+result1)
     console.log('migration batch command result 2: '+result2)
     console.log('migration batch command result 3: '+result3)
-    
-    // export intance to usage from another common library or pipeline sequence
-    export db_query
 
     ```
 
@@ -197,7 +199,7 @@
 # 🧩 Description of commands for batch instance (support essentials commands vs cli instance)
 
 - **db_migrate**  
-    #### Migrate last file pending: 
+    #### Migrate last files pending: 
     ```javascript
     const params = {'command':'db_migrate','indexMigration':null,'nameFileMigration':null }
     const result= await db_query.start(params)
@@ -226,7 +228,7 @@
     const result = await db_query.start(params)
     console.info('migration batch command result: '+result)
     ```
-    #### Undo migration ndex: 
+    #### Undo migration index: 
     ```javascript
     const params = {'command':'db_rollback','indexMigration':2,'nameFileMigration':null }
     const result = await db_query.start(params)
@@ -235,7 +237,7 @@
 
 - **db_status**
     #### Check migrations integrity, check indexes of pending and executed migrations:
-    - The `index` field shown here is 0-based and matches exactly the `<index>` argument used by `db_migrate` and `db_rollback` (no offset is applied).
+    - The `index` field shown here is 0-based and matches exactly the `indexMigration` argument used by `db_migrate` and `db_rollback` (no offset is applied).
     ```javascript
     const params = {'command':'db_status','indexMigration':null,'nameFileMigration':null }
     const result = await db_query.start(params)
