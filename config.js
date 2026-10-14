@@ -17,19 +17,21 @@ const path_package = path.join(pathRoot,file_package)
 
 const addFileConfig = async()=>{
     const data = 
-    "import Migration from 'mysql2-migrations'\n"+
+    "import { MigrationCLI } from 'mysql2-migrations'\n"+
     "\n"+
-    "//Use this instance to do migrations in cli\n"+
-    "const db_query = new Migration()\n"+
-    'db_query.database = "test"\n'+
-    'db_query.user = "root"\n'+
-    'db_query.password = "password"\n'+
-    'db_query.host = "127.0.0.1"\n'+
-    "db_query.port = 3306\n"+
-    'db_query.name_table_migrations = "table_migrations_app"\n'+
-    "db_query.show_query = true\n"+
-    "db_query.skip_migration_error = true\n"+
-    "db_query.show_depuration = true\n"+
+    "//Use this instance to execute migrations commands in pipeline sequence\n"+
+    "const db_query = new MigrationCLI({\n"+
+    "  host: '127.0.0.1',\n"+
+    "  port: 3306\n"+
+    "  user: 'root',\n"+
+    "  password: 'password',\n"+
+    "  database_name: 'test',\n"+
+    "  table_migrations_name: 'table_migrations_app',\n"+
+    "  show_query: true,\n"+
+    "  skip_migration_error: true,\n"+
+    "  show_depuration: true\n"+
+    "})\n"+
+    "\n"+
     "db_query.start()\n";
     
     try {
@@ -45,32 +47,19 @@ const addFileConfigBatch = async()=>{
     "import { MigrationBatch } from 'mysql2-migrations'\n"+
     "\n"+
     "//Use this instance to execute migrations commands in pipeline sequence\n"+
-    "const db_query = new MigrationBatch()\n"+
-    'db_query.database = "test"\n'+
-    'db_query.user = "root"\n'+
-    'db_query.password = "password"\n'+
-    'db_query.host = "127.0.0.1"\n'+
-    "db_query.port = 3306\n"+
-    'db_query.name_table_migrations = "table_migrations_app"\n'+
-    "db_query.show_query = true\n"+
-    "db_query.skip_migration_error = true\n"+
-    "db_query.show_depuration = true\n"+
+    "const db_query = new MigrationBatch({\n"+
+    "  host: '127.0.0.1',\n"+
+    "  port: 3306\n"+
+    "  user: 'root',\n"+
+    "  password: 'password',\n"+
+    "  database_name: 'test',\n"+
+    "  table_migrations_name: 'table_migrations_app',\n"+
+    "  show_query: true,\n"+
+    "  skip_migration_error: true,\n"+
+    "  show_depuration: true\n"+
+    "})\n"+
     "\n"+
-    "//example usage: this instance not supported all commands vs Migration instance CLI (please read the documentation)\n"+
-    "//example migrate all files:\n"+
-    "//const params1 = {'command':'db_migrate_all','indexMigration':null,'nameFileMigration':null }\n"+
-    "//example direct migration file without index:\n"+
-    "//const params2 = {'command':'db_migrate','indexMigration':null,'nameFileMigration':'example_migration_file.js' }\n"+
-    "//example rollback to a specific migration:\n"+
-    "//const params3 = {'command':'db_rollback','indexMigration':2,'nameFileMigration':null }\n"+
-    "//const result1 = await db_query.start(params1)\n"+
-    "//const result2 = await db_query.start(params2)\n"+
-    "//const result3 = await db_query.start(params3)\n"+
-    "//console.log('migration batch command result 1: '+result1)\n"+
-    "//console.log('migration batch command result 2: '+result2)\n"+
-    "//console.log('migration batch command result 3: '+result3)\n"+
-    "\n"+
-    "// export intance to usage from another common library or pipeline sequence \n"+
+    "// export instance to usage from another common library or pipeline sequence \n"+
     "export default db_query\n";
     
     try {

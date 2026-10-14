@@ -36,7 +36,7 @@
     
     ```javascript
     import { MigrationCLI } from 'mysql2-migrations'
-    
+
     const db_query = new MigrationCLI({
         "host": "127.0.0.1",     // mysql server host
         "port": 3306,            // mysql server port
@@ -44,7 +44,7 @@
         "password": "password",  // mysql user password
         "database_name": "test_db", // target database name
         "table_migrations_name": "table_migrations_app",  // table used to track executed migrations (min 2, max 60 chars, only letters/numbers/underscore)
-        "show_qery": false,      // print the SQL being executed for each migration file (useful for debugging)
+        "show_query": false,      // print the SQL being executed for each migration file (useful for debugging)
         "skip_migration_error": true,  // continue running the remaining migration files even if one query fails, this can hide real errors, e.g. migration files with an empty "down" or "up" query
         "show_depuration": true  // log the final result object returned by the CLI command (recommended)
     });
@@ -58,16 +58,17 @@
     import { MigrationBatch } from 'mysql2-migrations'
 
     //Use this instance to execute migrations commands in pipeline sequence
-    const db_query = new MigrationBatch()
-    db_query.database = "test"
-    db_query.user = "root"
-    db_query.password = "password"
-    db_query.host = "127.0.0.1"
-    db_query.port = 3306
-    db_query.name_table_migrations = "table_migrations_app"
-    db_query.show_query = true
-    db_query.skip_migration_error = true
-    db_query.show_depuration = true
+    const db_query = new MigrationBatch({
+        host : "127.0.0.1",
+        port : 3306,
+        user : "root",
+        password : "password",
+        database : "test_db",
+        name_table_migrations : "table_migrations_app",
+        show_query : true,
+        skip_migration_error : true,
+        show_depuration : true
+    })
 
     // export intance to usage from another common library or pipeline sequence
     export default db_query
