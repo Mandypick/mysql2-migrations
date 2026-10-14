@@ -206,6 +206,7 @@
     const result= await db_query.start(params)
     console.log('migration batch command result :'+result)
     ```
+    <img width="1227" height="359" alt="db_migrate" src="https://github.com/user-attachments/assets/3ac1db64-f087-4795-869d-629fb70ee803" />
 
     #### Migrate index file: 
     ```javascript
@@ -213,6 +214,7 @@
     const result= await db_query.start(params)
     console.log('migration batch command result :'+result)
     ```
+    <img width="915" height="410" alt="db_migrate_index" src="https://github.com/user-attachments/assets/97f2758f-df7a-4436-b1c6-70788ba81d78" />
 
 - **db_migrate_all**  
     #### Migrate all files pending: 
@@ -221,6 +223,7 @@
     const result= await db_query.start(params)
     console.log('migration batch command result :'+result)
     ```
+    <img width="896" height="437" alt="db_migrate_all" src="https://github.com/user-attachments/assets/43b5fba7-ea65-4782-934f-be8a712ad01d" />
 
 - **db_rollback**
     #### Undo last migration: 
@@ -229,12 +232,15 @@
     const result = await db_query.start(params)
     console.info('migration batch command result: '+result)
     ```
+    <img width="879" height="430" alt="db_rollback" src="https://github.com/user-attachments/assets/89616b79-0db2-4497-ada5-cfb7e91246e4" />
+
     #### Undo migration index: 
     ```javascript
     const params = {'command':'db_rollback','indexMigration':2,'nameFileMigration':null }
     const result = await db_query.start(params)
     console.info('migration batch command result: '+result)
     ```
+    <img width="877" height="426" alt="db_rollback_index" src="https://github.com/user-attachments/assets/8d3d25ca-cb79-4beb-8692-edf85cec516c" />
 
 - **db_status**
     #### Check migrations integrity, check indexes of pending and executed migrations:
@@ -244,6 +250,7 @@
     const result = await db_query.start(params)
     console.log('migration batch command result : '+result)
     ```
+    <img width="862" height="419" alt="db_status" src="https://github.com/user-attachments/assets/b7056e3b-7aa2-4b71-a692-32c3a3f57e7d" />
 
 - **db_refresh**
     #### Undo and redo all migrations (CAUTION: DATA LOSS, not recommended): 
@@ -252,6 +259,7 @@
     const result = await db_query.start(params)
     console.log('migration batch command result: '+result)
     ```
+    <img width="914" height="457" alt="db_refresh" src="https://github.com/user-attachments/assets/adae80b4-65c7-445d-9d8c-9d7dbecdf30b" />
 
 - **You can also run direct UP or DOWN migrations**
     ### DIRECT MIGRATIONS WILL NOT BE SAVED IN THE "table_migrations_app" TABLE
