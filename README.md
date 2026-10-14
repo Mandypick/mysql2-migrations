@@ -47,7 +47,7 @@
         "table_migrations_name": "table_migrations_app",  // table used to track executed migrations (min 2, max 60 chars, only letters/numbers/underscore)
         "show_query": false,      // print the SQL being executed for each migration file (useful for debugging)
         // continue running the remaining migration files even if one query fails, this can hide real errors, e.g. migration files with an empty "down" or "up" query, SYNTAX ERROR in an SQL statement
-        "skip_migration_error": true,  
+        "skip_migration_error": false,  
         "show_depuration": true  // log the final result object returned by the CLI command (recommended)
     });
     db_query.start();
@@ -69,7 +69,7 @@
         name_table_migrations : "table_migrations_app",
         show_query : true,
         // continue running the remaining migration files even if one query fails, this can hide real errors, e.g. migration files with an empty "down" or "up" query, SYNTAX ERROR in an SQL statement
-        skip_migration_error : true,
+        skip_migration_error : false,
         show_depuration : true
     })
 

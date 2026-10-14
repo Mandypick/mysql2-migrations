@@ -28,7 +28,7 @@ const addFileConfig = async()=>{
     "  database_name: 'test',\n"+
     "  table_migrations_name: 'table_migrations_app',\n"+
     "  show_query: true,\n"+
-    "  skip_migration_error: true,\n"+
+    "  skip_migration_error: false,\n"+
     "  show_depuration: true\n"+
     "})\n"+
     "\n"+
@@ -55,7 +55,7 @@ const addFileConfigBatch = async()=>{
     "  database_name: 'test',\n"+
     "  table_migrations_name: 'table_migrations_app',\n"+
     "  show_query: true,\n"+
-    "  skip_migration_error: true,\n"+
+    "  skip_migration_error: false,\n"+
     "  show_depuration: true\n"+
     "})\n"+
     "\n"+

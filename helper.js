@@ -134,9 +134,9 @@ export class UtilitaryMigrationBatch {
     // OK
     run_query = async(query,params=[])=>{    
         const conn = await this.pool.getConnection().catch((err)=> {return {"error":err}})
-        if(conn.error){ return { status:false, error: conn.error } }
+        if(conn.error){ return { status:false, warning: "Failed to get database connection", error: conn.error } }
         const result = await conn.query(query,params).then(([rows,fields])=>{ return {"status":true,rows,fields}})
-        .catch((err)=>{ return {"status":false, "error": err} })
+        .catch((err)=>{ return {"status":false, warning: "Failed to execute query", error: err } })
         .finally(()=>{ if(conn && conn.release) conn.release()})
         return result
     }
@@ -170,12 +170,12 @@ export class UtilitaryMigrationBatch {
                             await this.updateRecords(type,timestamp)
                             continue
                         }else{
-                            return {"status":false,"error":result.error.sqlMessage}
+                            return {"status":false, "events": warnings_events, "error":result.error.sqlMessage}
                         }
                     }
                 }
             }else{
-                return {"status":false,"error":"Failed Query: "+type.toUpperCase()+", Query type not supported!", warnings: warnings_events}
+                return {"status":false,"error":"Failed Query: "+type.toUpperCase()+", Query type not supported!", events: warnings_events}
             }
         }
         return {"status":true, "message":"No more querys "+type.toUpperCase()+" to running!", "events":warnings_events }
