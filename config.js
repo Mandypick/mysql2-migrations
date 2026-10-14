@@ -19,10 +19,10 @@ const addFileConfig = async()=>{
     const data = 
     "import { MigrationCLI } from 'mysql2-migrations'\n"+
     "\n"+
-    "//Use this instance to execute migrations commands in pipeline sequence\n"+
+    "//Use this instance to execute migrations from console only\n"+
     "const db_query = new MigrationCLI({\n"+
     "  host: '127.0.0.1',\n"+
-    "  port: 3306\n"+
+    "  port: 3306,\n"+
     "  user: 'root',\n"+
     "  password: 'password',\n"+
     "  database_name: 'test',\n"+
@@ -49,7 +49,7 @@ const addFileConfigBatch = async()=>{
     "//Use this instance to execute migrations commands in pipeline sequence\n"+
     "const db_query = new MigrationBatch({\n"+
     "  host: '127.0.0.1',\n"+
-    "  port: 3306\n"+
+    "  port: 3306,\n"+
     "  user: 'root',\n"+
     "  password: 'password',\n"+
     "  database_name: 'test',\n"+

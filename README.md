@@ -37,6 +37,7 @@
     ```javascript
     import { MigrationCLI } from 'mysql2-migrations'
 
+    // use this instance to execute migrations from console only
     const db_query = new MigrationCLI({
         "host": "127.0.0.1",     // mysql server host
         "port": 3306,            // mysql server port
