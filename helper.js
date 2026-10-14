@@ -8,7 +8,8 @@ export const enumCoommands = {
     "db_migrate_all": "migrate",
     "db_migrate": "up",
     "db_rollback": "down",
-    "db_status": "status"
+    "db_status": "status",
+    "db_create": "create"
 }
 
 const _status_events = {"mig":"MIGRATED","pen":"PENDING","nff":"FILE-NO-FOUND","eum":"EVENT-UP-EMPTY","edm":"EVENT-DOWN-EMPTY","und":"UNDEFINED"}
@@ -352,27 +353,27 @@ export class UtilitaryMigrationBatch {
         
         if((this.command && typeof enumCoommands[this.command] === "string" && this.command !== "" && this.command in enumCoommands) && (this.indexMigration === null || typeof this.indexMigration !== "number" || isNaN(this.indexMigration)) && (this.nameFileMigration === null || typeof this.nameFileMigration !== "string" || this.nameFileMigration === "") ){
             
-            if(enumCoommands[this.command] == "up"){
+            if(enumCoommands[this.command] == enumCoommands.db_migrate){
                 this.max_count = 1
                 const result = await this.up_migration_batch()
                 result.warnings_events = this.general_warnings_batch
                 result.command = ">> MIGRATE - BATCH <<"
                 return result
             }
-            if(enumCoommands[this.command] == "down"){
+            if(enumCoommands[this.command] == enumCoommands.db_rollback){
                 this.max_count = 1
                 const result = await this.down_migrations_batch()
                 
                 result.command = ">> ROLLBACK - BATCH <<"
                 return result
             }
-            if(enumCoommands[this.command] == "migrate"){
+            if(enumCoommands[this.command] == enumCoommands.db_migrate_all){
                 const result = await this.up_migrations_first_time_batch()
                 result.warnings_events = this.general_warnings_batch
                 result.command = ">> MIGRATE ALL - BATCH <<"
                 return result
             }
-            if(enumCoommands[this.command] == "refresh"){
+            if(enumCoommands[this.command] == enumCoommands.db_refresh){
                 const resultdown = await this.down_migrations_batch()
                 if(!resultdown.status){
                     return resultdown
@@ -383,7 +384,7 @@ export class UtilitaryMigrationBatch {
                 }
                 return {"down":resultdown,"up":resultup, command:">> REFRESH - BATCH <<"}
             }
-            if(enumCoommands[this.command] == "status"){
+            if(enumCoommands[this.command] == enumCoommands.db_status){
                 const result = await this.get_status_batch()
                 result.command = ">> STATUS - BATCH <<"
                 if(!result.status){
@@ -393,21 +394,21 @@ export class UtilitaryMigrationBatch {
             }
         }
 
-        if((enumCoommands[this.command] == "down" || enumCoommands[this.command] == "up") && (this.indexMigration !== null && typeof this.indexMigration === "number" && this.indexMigration >= 0) && (this.nameFileMigration === null || typeof this.nameFileMigration !== "string" || this.nameFileMigration === "")){
+        if((enumCoommands[this.command] == enumCoommands.db_rollback || enumCoommands[this.command] == enumCoommands.db_migrate) && (this.indexMigration !== null && typeof this.indexMigration === "number" && this.indexMigration >= 0) && (this.nameFileMigration === null || typeof this.nameFileMigration !== "string" || this.nameFileMigration === "")){
         
-            if(enumCoommands[this.command] == "up" && !isNaN(this.indexMigration)){
+            if(enumCoommands[this.command] == enumCoommands.db_migrate && !isNaN(this.indexMigration)){
                 const result = await this.up_migration_to_index_batch(Number(this.indexMigration))
                 result.command = ">> MIGRATE TO INDEX - BATCH <<"
                 return result
             }
-            if(enumCoommands[this.command] == "down" && !isNaN(this.indexMigration)){
+            if(enumCoommands[this.command] == enumCoommands.db_rollback && !isNaN(this.indexMigration)){
                 const result = await this.down_migration_to_index_batch(Number(this.indexMigration))
                 result.command = ">> ROLLBACK TO INDEX - BATCH <<"
                 return result
             }
             return {"status":false,"error":"Failed command!","message":"Invalid command! Missed or invalid index parameter, it should be a number!"}
         }
-        if((enumCoommands[this.command] == "down" || enumCoommands[this.command] == "up") && (this.nameFileMigration !== null && typeof this.nameFileMigration === "string" && this.nameFileMigration.length > 0) && (this.indexMigration === null || typeof this.indexMigration !== "number" || isNaN(this.indexMigration))){
+        if((enumCoommands[this.command] == enumCoommands.db_rollback || enumCoommands[this.command] == enumCoommands.db_migrate) && (this.nameFileMigration !== null && typeof this.nameFileMigration === "string" && this.nameFileMigration.length > 0) && (this.indexMigration === null || typeof this.indexMigration !== "number" || isNaN(this.indexMigration))){
             if(this.migrations_types.includes(enumCoommands[this.command])){
                 const result = await this.run_migration_directly_batch()
                 result.command = ">> DIRECT STRING QUERY - BATCH <<"
@@ -728,7 +729,7 @@ export class UtilitaryMigrationCLI {
     }
     //ok
     handle = async()=>{
-        if(this.argv[2] === "create" && this.argv.length == 4){
+        if(this.argv[2] === enumCoommands.db_create && this.argv.length == 4){
             const validateFileName =  validate_file_name(this.argv[3])
             if(validateFileName.status){ 
                 const result = await this.add_migration()
@@ -747,24 +748,24 @@ export class UtilitaryMigrationCLI {
         }
         if(this.argv.length == 3){
             
-            if(this.argv[2] == "up"){
+            if(this.argv[2] == enumCoommands.db_migrate){
                 this.max_count = 1
                 const result = await this.up_migration()
                 this.cb(" >> MIGRATE << ")
                 return result
             }
-            if(this.argv[2] == "down"){
+            if(this.argv[2] == enumCoommands.db_rollback){
                 this.max_count = 1
                 const result = await this.down_migrations()
                 this.cb(" >> ROLLBACK << ")
                 return result
             }
-            if(this.argv[2] == "migrate"){
+            if(this.argv[2] == enumCoommands.db_migrate_all){
                 const result = await this.up_migrations_first_time()
                 this.cb(" >> MIGRATE ALL << ")
                 return result
             }
-            if(this.argv[2] == "refresh"){
+            if(this.argv[2] == enumCoommands.db_refresh){
                 const resultdown = await this.down_migrations()
                 if(!resultdown.status){
                     return resultdown
@@ -776,7 +777,7 @@ export class UtilitaryMigrationCLI {
                 this.cb(" >> REFRESH << ")
                 return {"down":resultdown,"up":resultup}
             }
-            if(this.argv[2] == "status"){
+            if(this.argv[2] == enumCoommands.db_status){
                 const result = await this.get_status()
                 if(!result.status){
                     return result
@@ -785,13 +786,13 @@ export class UtilitaryMigrationCLI {
                 return result
             }
         }
-        if((this.argv[2] == "down" || this.argv[2] == "up") && this.argv.length == 4){
-            if(this.argv[2] == "up" && !isNaN(this.argv[3])){
+        if((this.argv[2] == enumCoommands.db_rollback || this.argv[2] == enumCoommands.db_migrate) && this.argv.length == 4){
+            if(this.argv[2] == enumCoommands.db_migrate && !isNaN(this.argv[3])){
                 const result = await this.up_migration_to_index(Number(this.argv[3]))
                 this.cb(" >> MIGRATE TO INDEX << ")
                 return result
             }
-            if(this.argv[2] == "down" && !isNaN(this.argv[3])){
+            if(this.argv[2] == enumCoommands.db_rollback && !isNaN(this.argv[3])){
                 const result = await this.down_migration_to_index(Number(this.argv[3]))
                 this.cb(" >> ROLLBACK TO INDEX << ")
                 return result
