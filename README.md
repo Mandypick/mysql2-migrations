@@ -46,7 +46,8 @@
         "database_name": "test_db", // target database name
         "table_migrations_name": "table_migrations_app",  // table used to track executed migrations (min 2, max 60 chars, only letters/numbers/underscore)
         "show_query": false,      // print the SQL being executed for each migration file (useful for debugging)
-        "skip_migration_error": true,  // continue running the remaining migration files even if one query fails, this can hide real errors, e.g. migration files with an empty "down" or "up" query
+        // continue running the remaining migration files even if one query fails, this can hide real errors, e.g. migration files with an empty "down" or "up" query, SYNTAX ERROR in an SQL statement
+        "skip_migration_error": true,  
         "show_depuration": true  // log the final result object returned by the CLI command (recommended)
     });
     db_query.start();
@@ -67,6 +68,7 @@
         database : "test_db",
         name_table_migrations : "table_migrations_app",
         show_query : true,
+        // continue running the remaining migration files even if one query fails, this can hide real errors, e.g. migration files with an empty "down" or "up" query, SYNTAX ERROR in an SQL statement
         skip_migration_error : true,
         show_depuration : true
     })
@@ -90,6 +92,8 @@
     const result3 = await db_query.start(params3)
     console.log('migration batch command result 2: '+result2)
     console.log('migration batch command result 3: '+result3)
+
+    db_query.closePool(); // close the mysql2 pool connection after executing the migration commands sequentially
 
     ```
 

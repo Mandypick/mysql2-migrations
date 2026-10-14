@@ -83,7 +83,7 @@ export class MigrationBatch {
     }
 
 }
-// OK
+
 export class MigrationCLI {
     #pool = null;
     #show_query = null;
