@@ -265,22 +265,28 @@
     ### DIRECT MIGRATIONS WILL NOT BE SAVED IN THE "table_migrations_app" TABLE
     ### Don't mix direct migrations with stored migrations in the database
     ### Use this function only to execute queries that don't need to be stored in the database and that you are sure will not cause problems in the future.
-    
+    ### This file name is just an example (see image); don't use a timestamp, you can use unformatted file names, e.g.: "direct_create_users_table.js"
+  
     ### Example type up:
     ```javascript
-    const params = {'command':'db_migrate','indexMigration':null,'nameFileMigration':'direct_create_users_table.js' }
+    const params = {'command':'db_migrate','indexMigration':null,'nameFileMigration':'1791951137887_example_migration_file.js' }
     const result = await db_query.start(params)
     console.log('migration batch command result: '+result)
     ```
+    <img width="886" height="331" alt="direct query up" src="https://github.com/user-attachments/assets/548e7f9d-b4b8-4225-9cb1-b8470c77fc17" />
+
     ### Example type down:
     ```javascript    
-    const params = {'command':'db_rollback','indexMigration':null,'nameFileMigration':'direct_create_users_table.js' }
+    const params = {'command':'db_rollback','indexMigration':null,'nameFileMigration':'1791951137887_example_migration_file.js' }
     const result = await db_query.start(params)
     console.log('migration batch command result: '+result)
     ```
+    <img width="873" height="371" alt="direct query down" src="https://github.com/user-attachments/assets/99a182ca-83d7-4f26-a854-4c63e1f8a0e4" />
+
 # 🔥 Others
 
 - Help
 ```javascript
 npx mysql2-migrations help
 ```
+<img width="1219" height="571" alt="help" src="https://github.com/user-attachments/assets/5a397d14-8a7c-4f8f-8059-ff90c8cf1909" />
