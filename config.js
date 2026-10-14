@@ -6,17 +6,20 @@ import colors from "colors"
 import { argv, config } from "node:process"
 
 const file_name = "migrations_config.js"
+const file_name_batch = "migrations_config_batch.js"
 const file_package = "package.json"
 const pathRoot =  path.normalize(process.cwd())
 const relative_path_config = path.join(pathRoot,"mysql2-migrations")
 const relative_path_migrations = path.join(relative_path_config,"migrations")
 const path_config = path.join(relative_path_config,file_name)
+const path_config_batch = path.join(relative_path_config,file_name_batch)
 const path_package = path.join(pathRoot,file_package)
 
 const addFileConfig = async()=>{
     const data = 
     "import Migration from 'mysql2-migrations'\n"+
     "\n"+
+    "//Use this instance to do migrations in cli\n"+
     "const db_query = new Migration()\n"+
     'db_query.database = "test"\n'+
     'db_query.user = "root"\n'+
@@ -32,6 +35,47 @@ const addFileConfig = async()=>{
     try {
         await fs.writeFile(path_config,data,"utf-8")
         return {"status":true,"file_name":file_name}
+    } catch(err){
+        return {"status":false,"error":err}
+    }
+}
+
+const addFileConfigBatch = async()=>{
+    const data = 
+    "import { MigrationBatch } from 'mysql2-migrations'\n"+
+    "\n"+
+    "//Use this instance to execute migrations commands in pipeline sequence\n"+
+    "const db_query = new MigrationBatch()\n"+
+    'db_query.database = "test"\n'+
+    'db_query.user = "root"\n'+
+    'db_query.password = "password"\n'+
+    'db_query.host = "127.0.0.1"\n'+
+    "db_query.port = 3306\n"+
+    'db_query.name_table_migrations = "table_migrations_app"\n'+
+    "db_query.show_query = true\n"+
+    "db_query.skip_migration_error = true\n"+
+    "db_query.show_depuration = true\n"+
+    "\n"+
+    "//example usage: this instance not supported all commands vs Migration instance CLI (please read the documentation)\n"+
+    "//example migrate all files:\n"+
+    "//const params1 = {'command':'db_migrate_all','indexMigration':null,'nameFileMigration':null }\n"+
+    "//example direct migration file without index:\n"+
+    "//const params2 = {'command':'db_migrate','indexMigration':null,'nameFileMigration':'example_migration_file.js' }\n"+
+    "//example rollback to a specific migration:\n"+
+    "//const params3 = {'command':'db_rollback','indexMigration':2,'nameFileMigration':null }\n"+
+    "//const result1 = await db_query.start(params1)\n"+
+    "//const result2 = await db_query.start(params2)\n"+
+    "//const result3 = await db_query.start(params3)\n"+
+    "//console.log('migration batch command result 1: '+result1)\n"+
+    "//console.log('migration batch command result 2: '+result2)\n"+
+    "//console.log('migration batch command result 3: '+result3)\n"+
+    "\n"+
+    "// export intance to usage from another common library or pipeline sequence \n"+
+    "export default db_query\n";
+    
+    try {
+        await fs.writeFile(path_config_batch,data,"utf-8")
+        return {"status":true,"file_name":file_name_batch}
     } catch(err){
         return {"status":false,"error":err}
     }
@@ -99,9 +143,20 @@ const init = async()=>{
     if(makeaDirResultConfig.status){
         const resultAddFileConfig = await addFileConfig()
         if(resultAddFileConfig.status){
-            console.info(colors.cyan("⚡️Config file created! OK, path: "+colors.blue(path_config)))
+            console.info(colors.cyan("⚡️Config file created! OK, path: "+colors.blue(path_config)+"\n"))
         } else {
             console.error(colors.red(" Error: "+resultAddFileConfig.error))
+        }
+    }else{
+        console.error(colors.red(" Error:  Config directory not found!"))
+    }
+    console.info( colors.green(" Creating file(batch) config.."))
+    if(makeaDirResultConfig.status){
+        const resultAddFileConfigBatch = await addFileConfigBatch()
+        if(resultAddFileConfigBatch.status){
+            console.info(colors.cyan("⚡️Config file batch created! OK, path: "+colors.blue(path_config_batch)+"\n"))
+        } else {
+            console.error(colors.red(" Error: "+resultAddFileConfigBatch.error))
         }
     }else{
         console.error(colors.red(" Error:  Config directory not found!"))
@@ -110,13 +165,28 @@ const init = async()=>{
 }
 
 const help = async()=>{
-    const configuration = ""
-    const data = {"version":"0.0.0"}
+    let configuration = ""
+    let data = {"version":"0.0.0"}
+    const frames = ["|", "/", "-", "\\"];
+    
+    let i = 0;
+
+    const spinner = setInterval(() => {
+    process.stdout.write(`\rReading.. ${frames[i++ % frames.length]}`);
+    }, 100);
+
     try{ 
         configuration = await fs.readFile("./node_modules/mysql2-migrations/package.json","utf-8")
         data = JSON.parse(configuration.toString('utf-8'))
-    }catch(err){}
+        await new Promise(resolve => setTimeout(resolve, 1000));
+    }catch(err){
+        console.error(colors.red("Error: "+err))
+        return {"status":false,"error":err}
+    }
     
+    clearInterval(spinner);
+    process.stdout.write("\r");
+
     const _help={
         "npx mysql2-migrations init":"Create files and initialize configuration environment(overwrite current configuration)",
         "npx mysql2-migrations help":"Show descriptions commands - help",
@@ -129,10 +199,21 @@ const help = async()=>{
         "npm run db_rollback <index>": "Undo migration with index, use: npm run db_rollback 0 (index starts from 0)",
         "npm run db_status": "Check migrations integrity, check indexes of pending and executed migrations"
     }
+    const _help_batch={
+        "db_refresh": "refresh all migrations (CAUTION DATA LOSS)",
+        "db_migrate_all": "migrate all migrations pending",
+        "db_migrate": "execute last migration pending, up migration with index or direct migration file",
+        "db_rollback": "undo latest migration, down migration with index or direct migration file",
+        "db_status": "status of migrations integrity, check indexes of pending and executed migrations",
+   }
+
     console.log(colors.cyan("mysql2-migrations v"+data.version))
+    console.log(colors.cyan("cli commands (only for Migration instance)"))
     console.table(_help)
+    console.log(colors.cyan("batch commands (only for MigrationBatch instance), please see documentation for usage"))
+    console.table(_help_batch)
     console.log(colors.yellow("Commands don't works!, reminder attach commands npm(only) in scripts property package.json file (run 'npx mysql2-migrations init')"))
-    console.log(colors.yellow("DB Credentilas must be set in new Migration() instance (see migrations_config.js)"))
+    console.log(colors.yellow("DB Credentilas must be set in new Migration() and MigrationBatch() instances (see migrations_config.js and migrations_config_batch.js)"))
     console.log(colors.green("visit: ")+colors.blue("https://www.npmjs.com/package/mysql2-migrations"))
     process.exit(0)
 }

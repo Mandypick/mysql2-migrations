@@ -1,10 +1,10 @@
 #  Mysql2 Migrations :: Type module projects
     
-- Create and manager migrations with mysql2 from repositories with configuration "TYPE MODULE"
+- Create and manage migrations with mysql2 from repositories with configuration "TYPE MODULE"
 
 # 📫 Disclaimer
 
-- This package must be used with MODULE TYPE IMPORT AND FROM
+- This package must be used with ESM syntax ("import"/"export"), not CommonJS ("require")
 - Set config on package.json "type": "module"
 
 # 🧠 Configuration
@@ -12,7 +12,7 @@
 - step 1
 
     - Install dependencies
-    - Should install 'mysql2' dependency in your projects first
+    - You should install the 'mysql2' dependency in your project first
 
     ```javascript
     npm i mysql2
@@ -28,35 +28,76 @@
     ```
     <img width="982" height="288" alt="npx init" src="https://github.com/user-attachments/assets/c75e6312-ba06-4a2e-9111-6754fa458c09" />
 
-- step 3 (Optional configure environment yourself)
+- step 3 (Optional: configure the environment yourself)
     
-    - 1.Create a folder in root app with name "mysql2-migrations"
-    - 2.Create a "migrations_config.js" file in "mysql2-migrations" folder with next configuration(add your db credentials here)
-
+    - 1. Create a folder in the root app with name "mysql2-migrations"
+    - 2. Create a "migrations_config.js" file in the "mysql2-migrations" folder with the following configuration (add your db credentials here)
+    - Using Migration as a unique instance to cli
+    
     ```javascript
     import Migration from 'mysql2-migrations'
-    
+
     const db_query = new Migration()
+    db_query.database = "test"              // target database name
+    db_query.user = "root"                  // mysql user with permissions to CREATE/ALTER/DROP
+    db_query.password = "password"          // mysql user password
+    db_query.host = "127.0.0.1"             // mysql server host
+    db_query.port = 3306                    // mysql server port
+    db_query.name_table_migrations = "table_migrations_app" // table used to track executed migrations (min 2, max 60 chars, only letters/numbers/underscore)
+    db_query.show_query = true              // print the SQL being executed for each migration file (useful for debugging)
+    db_query.skip_migration_error = true    // continue running the remaining migration files even if one query fails
+                                             // (use with caution: this can hide real errors, e.g. migration files with an empty "down" query)
+    db_query.show_depuration = true         // log the final result object returned by the CLI command (recommended)
+    db_query.exit_process = true            // terminate the node process when the command finishes (default behavior for CLI usage)
+                                             // set to false when using Migration as an instance inside another app/server, so it doesn't kill your process
+    db_query.close_pool = false             // close the internal mysql2 connection pool when the command finishes
+                                             // set to true together with exit_process=false if you run Migration once and don't want the pool kept open in memory
+    db_query.start()                        // runs the command received from process.argv (create, up, down, migrate, refresh, status, run)
+    ```
+
+    - 3. Create a "migrations_config_batch.js" file in the "mysql2-migrations" folder with the following configuration (add your db credentials here) 
+    - Using MigrationBatch as a reusable instance to node
+
+    ```javascript
+    import { MigrationBatch } from 'mysql2-migrations'
+
+    //Use this instance to execute migrations commands in pipeline sequence
+    const db_query = new MigrationBatch()
     db_query.database = "test"
     db_query.user = "root"
     db_query.password = "password"
     db_query.host = "127.0.0.1"
     db_query.port = 3306
-    db_query.name_table_migrations = "table_migrations_app" // two characters minimum
+    db_query.name_table_migrations = "table_migrations_app"
     db_query.show_query = true
-    db_query.skip_migration_error = true // use for skip some migration file with some error and continue with the rest of migration files, but this can cause problems if the error is in the query and not in the migration file, example: when use migrations files without "down" query
-    db_query.show_depuration = true // show depuration on finalize migration, recommended
-    db_query.start()
+    db_query.skip_migration_error = true
+    db_query.show_depuration = true
+
+    //example usage:
+    const params1 = {'command':'db_migrate_all','indexMigration':null,'nameFileMigration':null }
+    const params2 = {'command':'db_migrate','indexMigration':null,'nameFileMigration':'example_migration_file.js' }
+    const params3 = {'command':'db_rollback','indexMigration':2,'nameFileMigration':null }
+    const result1 = await db_query.start(params1)
+    const result2 = await db_query.start(params2)
+    const result3 = await db_query.start(params3)
+    console.log('migration batch command result 1: '+result1)
+    console.log('migration batch command result 2: '+result2)
+    console.log('migration batch command result 3: '+result3)
+    
+    // export intance to usage from another common library or pipeline sequence
+    export db_query
+
     ```
 
-    - 3.Create a subfolder "migrations" into "mysql2-migrations" folder:
+    - 4. Create a subfolder "migrations" inside the "mysql2-migrations" folder:
 
         - root_app/
             - mysql2-migrations/
                 - migrations_config.js
+                - migrations_config_batch.js
                 - migrations/
 
-    - 4.Add scripts commands to package.json configuration:
+    - 5. Add the script commands to the package.json configuration:
 
     ```javascript
     "scripts": {
@@ -69,7 +110,7 @@
     }
     ```
 
-# 👋 Description script commnads
+# 🧩 Description of script commands in CLI instance  
     
 - **db_create**       
     #### Create file to migrate: 
@@ -92,7 +133,7 @@
     ```
     <img width="767" height="485" alt="db_migrate" src="https://github.com/user-attachments/assets/23336f3a-500c-40af-ae90-243e25df3330" />
 
-    #### Migrate file with index: (check index with "npm run db_status")
+    #### Migrate file with index: (check index with "npm run db_status", index starts at 0)
     ```javascript
     npm run db_migrate <index>
     ```
@@ -115,31 +156,32 @@
     ```
     <img width="798" height="199" alt="db_rollback" src="https://github.com/user-attachments/assets/ab2ec33a-02b9-463f-8852-f269c17949e6" />
 
-    #### Undo migration with index: (check index with "npm run db_status")
+    #### Undo migration with index: (check index with "npm run db_status", index starts at 0)
     ```javascript
     npm run db_rollback <index>
     ```
     <img width="937" height="209" alt="db_rollback_index" src="https://github.com/user-attachments/assets/ca92bf1f-49f1-4307-a8a4-9b3f3ebbe179" />
 
 - **db_status**
-    #### Check migrations integrity, check indexes of pending and executed migrations: 
+    #### Check migrations integrity, check indexes of pending and executed migrations:
+    - The `index` field shown here is 0-based and matches exactly the `<index>` argument used by `db_migrate <index>` and `db_rollback <index>` (no offset is applied).
     ```javascript
     npm run db_status
     ```
     <img width="699" height="461" alt="db_status" src="https://github.com/user-attachments/assets/fd57173b-2b46-4527-9d4d-ae5fa8f6eb40" />
 
 - **db_refresh**
-    #### Undo and redo all migrations (CAUTION DATA LOSS, It is not recommended to do it ): 
+    #### Undo and redo all migrations (CAUTION: DATA LOSS, not recommended): 
     ```javascript
     npm run db_refresh
     ```
     <img width="792" height="467" alt="db_refresh" src="https://github.com/user-attachments/assets/cc2a30be-65f0-42bf-9b4d-08961fb88a92" />
 
-- **too You can also UP or DOWN direct migrations**
+- **You can also run direct UP or DOWN migrations**
     ### DIRECT MIGRATIONS WILL NOT BE SAVED IN THE "table_migrations_app" TABLE
-    ### Don't mixed direct migrations with stored migrations in database
-    ### Use this function only for execute some querys that are not necessary to be stored in the database and that you are sure that will not cause problems in the future.
-    ### This file name is example(image), dont use timestamp, you can to use unformatted names in files: example: "direct_create_users_table.js"
+    ### Don't mix direct migrations with stored migrations in the database
+    ### Use this function only to execute queries that don't need to be stored in the database and that you are sure will not cause problems in the future.
+    ### This file name is just an example (see image); don't use a timestamp, you can use unformatted file names, e.g.: "direct_create_users_table.js"
     ### Example type up:
     ```javascript
     node mysql2-migrations/migrations_config.js run direct_create_users_table.js up
@@ -152,6 +194,79 @@
     ```
     <img width="1175" height="110" alt="direct query down" src="https://github.com/user-attachments/assets/58d60c16-57d2-4cd2-93c0-5a82ab057a84" />
 
+# 🧩 Description of commands for batch instance (support essentials commands vs cli instance)
+
+- **db_migrate**  
+    #### Migrate last file pending: 
+    ```javascript
+    const params = {'command':'db_migrate','indexMigration':null,'nameFileMigration':null }
+    const result= await db_query.start(params)
+    console.log('migration batch command result :'+result)
+    ```
+
+    #### Migrate index file: 
+    ```javascript
+    const params = {'command':'db_migrate','indexMigration': 0,'nameFileMigration':null }
+    const result= await db_query.start(params)
+    console.log('migration batch command result :'+result)
+    ```
+
+- **db_migrate_all**  
+    #### Migrate all files pending: 
+    ```javascript
+    const params = {'command':'db_migrate_all','indexMigration':null,'nameFileMigration':null }
+    const result= await db_query.start(params)
+    console.log('migration batch command result :'+result)
+    ```
+
+- **db_rollback**
+    #### Undo last migration: 
+    ```javascript
+    const params = {'command':'db_rollback','indexMigration':null,'nameFileMigration':null }
+    const result = await db_query.start(params)
+    console.info('migration batch command result: '+result)
+    ```
+    #### Undo migration ndex: 
+    ```javascript
+    const params = {'command':'db_rollback','indexMigration':2,'nameFileMigration':null }
+    const result = await db_query.start(params)
+    console.info('migration batch command result: '+result)
+    ```
+
+- **db_status**
+    #### Check migrations integrity, check indexes of pending and executed migrations:
+    - The `index` field shown here is 0-based and matches exactly the `<index>` argument used by `db_migrate` and `db_rollback` (no offset is applied).
+    ```javascript
+    const params = {'command':'db_status','indexMigration':null,'nameFileMigration':null }
+    const result = await db_query.start(params)
+    console.log('migration batch command result : '+result)
+    ```
+
+- **db_refresh**
+    #### Undo and redo all migrations (CAUTION: DATA LOSS, not recommended): 
+    ```javascript
+    const params = {'command':'db_refresh','indexMigration':null,'nameFileMigration':null }
+    const result = await db_query.start(params)
+    console.log('migration batch command result: '+result)
+    ```
+
+- **You can also run direct UP or DOWN migrations**
+    ### DIRECT MIGRATIONS WILL NOT BE SAVED IN THE "table_migrations_app" TABLE
+    ### Don't mix direct migrations with stored migrations in the database
+    ### Use this function only to execute queries that don't need to be stored in the database and that you are sure will not cause problems in the future.
+    
+    ### Example type up:
+    ```javascript
+    const params = {'command':'db_migrate','indexMigration':null,'nameFileMigration':'direct_create_users_table.js' }
+    const result = await db_query.start(params)
+    console.log('migration batch command result: '+result)
+    ```
+    ### Example type down:
+    ```javascript    
+    const params = {'command':'db_rollback','indexMigration':null,'nameFileMigration':'direct_create_users_table.js' }
+    const result = await db_query.start(params)
+    console.log('migration batch command result: '+result)
+    ```
 # 🔥 Others
 
 - Help
