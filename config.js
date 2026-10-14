@@ -182,7 +182,7 @@ const help = async()=>{
         "npm run db_create <name>": "Create file to migrate, use: npm run db_create create_example_table",  
         "npm run db_refresh": "Undo and redo all migrations (CAUTION DATA LOSS)",
         "npm run db_migrate_all": "Migrate all files pending",
-        "npm run db_migrate": "Migrate last file pending",
+        "npm run db_migrate": "Migrate last files pending",
         "npm run db_migrate <index>": "Migrate file with index, use: npm run db_migrate 0 (index starts from 0)",
         "npm run db_rollback": "Undo latest migration",
         "npm run db_rollback <index>": "Undo migration with index, use: npm run db_rollback 0 (index starts from 0)",
@@ -197,12 +197,12 @@ const help = async()=>{
    }
 
     console.log(colors.cyan("mysql2-migrations v"+data.version))
-    console.log(colors.cyan("cli commands (only for Migration instance)"))
+    console.log(colors.cyan("cli commands (only for MigrationCLI instance)"))
     console.table(_help)
     console.log(colors.cyan("batch commands (only for MigrationBatch instance), please see documentation for usage"))
     console.table(_help_batch)
     console.log(colors.yellow("Commands don't works!, reminder attach commands npm(only) in scripts property package.json file (run 'npx mysql2-migrations init')"))
-    console.log(colors.yellow("DB Credentilas must be set in new Migration() and MigrationBatch() instances (see migrations_config.js and migrations_config_batch.js)"))
+    console.log(colors.yellow("DB Credentilas must be set in new MigrationCLI() and MigrationBatch() instances (see migrations_config.js and migrations_config_batch.js)"))
     console.log(colors.green("visit: ")+colors.blue("https://www.npmjs.com/package/mysql2-migrations"))
     process.exit(0)
 }
