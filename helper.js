@@ -14,7 +14,6 @@ export const enumCoommands = {
 
 const _status_events = {"mig":"MIGRATED","pen":"PENDING","nff":"FILE-NO-FOUND","eum":"EVENT-UP-EMPTY","edm":"EVENT-DOWN-EMPTY","und":"UNDEFINED"}
 
-//ok
 function validate_file_name(file_name){
     const _error_message = "Migration file name can contain alphabets, numbers, hyphen or underscore and max 200 characters!"
     if(typeof file_name !== "string" || file_name.length === 0 || file_name.length > 200){
@@ -23,7 +22,7 @@ function validate_file_name(file_name){
     let patt = new RegExp(/^[0-9a-zA-Z-_]+$/)
     return {"status":patt.test(file_name),"error":_error_message}
 }
-// ok
+
 function validate_file_extension(file_name){
     const _error_message = "Migration file name must have .js extension!"
     if(typeof file_name !== "string" || !file_name.endsWith(".js")){
@@ -31,7 +30,7 @@ function validate_file_extension(file_name){
     }
     return {"status":true,"error":null}
 }
-// OK
+
 async function readFolder (relative_path){
     const files = await fs.readdir(relative_path,{encoding:"utf-8",recursive:false})
     const arrayFiles =  files.filter((f)=> f.endsWith(".js") && f.includes("_") ) 
@@ -45,15 +44,15 @@ async function readFolder (relative_path){
     }) 
     return {"timestamps":timestamps,"files":arrayFilesItems}
 }
-// OK
+
 function map_timestamps_to_number_sort_asc(results){
     return results.rows.map(r => Number(r.timestamp)).filter(Number.isFinite).sort((a,b)=> a-b)
 }
-// OK
+
 function map_timestamps_to_number_sort_des(results){
     return results.rows.map(r => Number(r.timestamp)).filter(Number.isFinite).sort((a,b)=> b-a)
 }
-//ok
+
 function get_warnings_registered(timestamps,timestamps_db){
     const _warnings_registered = []
     for (let index = 0; index < timestamps_db.length; index++) {
@@ -64,7 +63,7 @@ function get_warnings_registered(timestamps,timestamps_db){
     }
     return _warnings_registered
 }
-// OK
+
 function get_warnings_repeat_files(files){
     const _warnings_repeated = []
     let frecuency = {}
@@ -78,7 +77,7 @@ function get_warnings_repeat_files(files){
     }
     return {"_warnings_repeated":_warnings_repeated, "repeated":repeated}
 }
-// OK
+
 async function makeaDir(relative_path){
     const dirs = await fs.opendir(relative_path).catch((err)=>{ console.error(colors.red("Migrations directory no found! "),err)})
     if(!dirs){
@@ -89,9 +88,9 @@ async function makeaDir(relative_path){
         } catch (error) {return {"status":false,"error":error}}
     }else{return {"status":true,"dirs":dirs}}
 }
-// OK
+
 function validate_table_name (table){ return typeof table === "string" && /^[a-zA-Z0-9_]{2,60}$/.test(table)}
-// OK
+
 export class UtilitaryMigrationBatch {
     pool = null;
     command = null;
@@ -122,7 +121,6 @@ export class UtilitaryMigrationBatch {
 
     relative_path_batch = ()=>path.join(process.cwd(),"mysql2-migrations/migrations")
 
-    // OK
     __mainBatch = async()=>{
         if(!validate_table_name(this.table_migrations_name)){ return {"status":false,"error":"Invalid migrations table name!"} }
         const makedir = await makeaDir(this.relative_path_batch())
@@ -131,7 +129,7 @@ export class UtilitaryMigrationBatch {
         const finalResult = result.status ? await this.handleBatch() : result
         return finalResult
     }
-    // OK
+    
     run_query = async(query,params=[])=>{    
         const conn = await this.pool.getConnection().catch((err)=> {return {"error":err}})
         if(conn.error){ return { status:false, warning: "Failed to get database connection", error: conn.error } }
@@ -140,7 +138,7 @@ export class UtilitaryMigrationBatch {
         .finally(()=>{ if(conn && conn.release) conn.release()})
         return result
     }
-    //OK
+    
     execute_query_batch = async (files_names,type)=>{
         const sort_files_names = [...files_names]
         const warnings_events = []
@@ -180,17 +178,17 @@ export class UtilitaryMigrationBatch {
         }
         return {"status":true, "message":"No more querys "+type.toUpperCase()+" to running!", "events":warnings_events }
     }
-    // OK
+    
     updateRecords = async(type,timestamp)=>{
         let query = ""
         if(type==="up"){ query = "INSERT INTO `"+this.table_migrations_name+"` (`timestamp`) VALUES (?)"}else if(type==='down'){ query = "DELETE FROM `"+this.table_migrations_name+"` WHERE `timestamp` = ?"}
         return await this.run_query(query,[timestamp])
     }
-    // OK
+    
     get_timestamps_db = async()=>{
         return await this.run_query("SELECT timestamp FROM "+this.table_migrations_name)
     }
-    //ok
+    
     up_migration_batch = async()=>{
         const results = await this.get_timestamps_db()
         const files_names = []
@@ -218,7 +216,7 @@ export class UtilitaryMigrationBatch {
         }
         return await this.execute_query_batch(files_names,"up")
     }
-    //ok
+    
     up_migrations_first_time_batch = async()=>{
         const results  = await this.get_timestamps_db()
         if(!results.status){ return {"status":false,"type":"up","error":results.error} }
@@ -236,7 +234,7 @@ export class UtilitaryMigrationBatch {
         }
         return await this.execute_query_batch(files_names,"up")
     }
-    //ok
+    
     down_migrations_batch = async()=>{
         const results = await this.get_timestamps_db()
         if(!results.status){ return {"status":false,"type":"down","error":results.error} }
@@ -256,7 +254,7 @@ export class UtilitaryMigrationBatch {
         }
         return await this.execute_query_batch(files_names,"down")
     }
-    //ok
+    
     up_migration_to_index_batch = async(index)=>{
         const { files, timestamps } = await readFolder(this.relative_path_batch())
         const file = files.find((f)=> f.timestamp == timestamps[index])
@@ -265,7 +263,7 @@ export class UtilitaryMigrationBatch {
         }
         return {"status":false,"type":"up","error":" Migration file index "+index+" no found!"}
     }
-    //ok
+    
     down_migration_to_index_batch = async(index)=>{
         const { files, timestamps } = await readFolder(this.relative_path_batch())
         const file = files.find((f)=> f.timestamp == timestamps[index])
@@ -274,7 +272,7 @@ export class UtilitaryMigrationBatch {
         }
         return {"status":false,"type":"down","warning":"Event type down is empty?","error":"Migration file or event on index "+index+" no found, verify the property down in the migration file!"}
     }
-    //ok
+    
     run_migration_directly_batch = async()=>{
         const file_name = this.nameFileMigration
         const type = enumCoommands[this.command]
@@ -305,14 +303,14 @@ export class UtilitaryMigrationBatch {
             return {"status":false,"error":"Failed Query: "+type.toUpperCase()+", Query type not supported!"}
         }
     }
-    // ok
+    
     BuildObjectConsoleAction = (queries,type,file_name,index=-1)=>{
         const description = queries["description"] ?? file_name
         let message_query = " no show "
         if(this.show_query){ message_query = queries[type] }
         return {"description":description,"query":message_query,"index":index}
     }
-    //ok
+    
     get_status_batch = async()=>{
         const results = await this.get_timestamps_db()
     
@@ -348,7 +346,7 @@ export class UtilitaryMigrationBatch {
 
         return {"status":true,"migrated":timestamps_db.length,"files":files.length,"repeated":repeated.length, "events": {"warnings_events":_warnings_events,"warnings_registered":_warnings_registered,"warnings_repeated":_warnings_repeated}}
     }
-    //ok
+    
     handleBatch = async()=>{
         
         if((this.command && typeof enumCoommands[this.command] === "string" && this.command !== "" && this.command in enumCoommands) && (this.indexMigration === null || typeof this.indexMigration !== "number" || isNaN(this.indexMigration)) && (this.nameFileMigration === null || typeof this.nameFileMigration !== "string" || this.nameFileMigration === "") ){
@@ -420,7 +418,7 @@ export class UtilitaryMigrationBatch {
         return {"status":false,"error":"Invalid command!","message":"Missed or to many parameter?"}
     }
 }
-// OK
+
 export class UtilitaryMigrationCLI {
     pool = null;
     table_migrations_name = null;
@@ -445,11 +443,10 @@ export class UtilitaryMigrationCLI {
         this.argv = argv
     }
 
-    // OK
+    
     relative_path = ()=>path.join(process.cwd(),"mysql2-migrations/migrations")
     max_count = 9999
    
-    // OK
     __main = async()=>{
         if(!validate_table_name(this.table_migrations_name)){ return {"status":false,"error":"Invalid migrations table name!"} }
         const makedir = await makeaDir(this.relative_path())
@@ -458,7 +455,7 @@ export class UtilitaryMigrationCLI {
         const finalResult = result.status ? await this.handle() : result
         return finalResult
     }
-    // OK
+    
     run_query = async(query,params=[])=>{    
         const conn = await this.pool.getConnection().catch((err)=> {return {"error":err}})
         if(conn.error){ return { status:false, error: conn.error } }
@@ -467,7 +464,7 @@ export class UtilitaryMigrationCLI {
         .finally(()=>{ if(conn && conn.release) conn.release()})
         return result
     }
-    // OK
+    
     execute_query = async (files_names,type)=>{
         const sort_files_names =  [...files_names]
         while (sort_files_names.length){ 
@@ -506,17 +503,17 @@ export class UtilitaryMigrationCLI {
         console.info(colors.magenta(this.alias_username)+colors.cyan(" Info: ")+colors.yellow(" No more querys "+type.toUpperCase()+" to running! "))
         return {"status":true, "message":"No more querys "+type.toUpperCase()+" to running!"}
     }
-    // OK
+    
     updateRecords = async(type,timestamp)=>{
         let query = ""
         if(type==="up"){ query = "INSERT INTO `"+this.table_migrations_name+"` (`timestamp`) VALUES (?)"}else if(type==='down'){ query = "DELETE FROM `"+this.table_migrations_name+"` WHERE `timestamp` = ?"}
         return await this.run_query(query,[timestamp])
     }
-    // OK
+    
     get_timestamps_db = async()=>{
         return await this.run_query("SELECT timestamp FROM "+this.table_migrations_name)
     }
-    // OK
+    
     validate_file_name = (file_name)=>{
         const _error_message = "Migration file name can contain alphabets, numbers, hyphen or underscore and max 200 characters!"
         if(typeof file_name !== "string" || file_name.length === 0 || file_name.length > 200){
@@ -525,7 +522,7 @@ export class UtilitaryMigrationCLI {
         let patt = new RegExp(/^[0-9a-zA-Z-_]+$/)
         return {"status":patt.test(file_name),"error":_error_message}
     }
-    //ok
+    
     add_migration = async ()=>{
         const DateString = Date.now()
         const file_name = (DateString+"_"+this.argv[3]+".js").toString()
@@ -538,7 +535,7 @@ export class UtilitaryMigrationCLI {
             return {"status":false,"error":err}
         }
     }
-    //ok
+    
     up_migration = async()=>{
         const results = await this.get_timestamps_db()
         const files_names = []
@@ -566,7 +563,7 @@ export class UtilitaryMigrationCLI {
         }
         return await this.execute_query(files_names,"up")
     }
-    //ok
+    
     up_migrations_first_time = async()=>{
         const results  = await this.get_timestamps_db()
         if(!results.status){ return {"status":false,"type":"up","error":results.error} }
@@ -584,7 +581,7 @@ export class UtilitaryMigrationCLI {
         }
         return await this.execute_query(files_names,"up")
     }
-    //ok
+    
     down_migrations = async()=>{
         const results = await this.get_timestamps_db()
         if(!results.status){ return {"status":false,"type":"down","error":results.error} }
@@ -603,7 +600,7 @@ export class UtilitaryMigrationCLI {
         }
         return await this.execute_query(files_names,"down")
     }
-    //ok
+    
     up_migration_to_index = async(index)=>{
         const { files, timestamps } = await readFolder(this.relative_path())
         const file = files.find((f)=> Number(f.timestamp) == timestamps[index])
@@ -612,7 +609,7 @@ export class UtilitaryMigrationCLI {
         }
         return {"status":false,"type":"up","error":" Migration file index "+index+" no found!"}
     }
-    //ok
+    
     down_migration_to_index = async(index)=>{
         const { files, timestamps } = await readFolder(this.relative_path())
         const file = files.find((f)=> f.timestamp == timestamps[index])
@@ -621,7 +618,7 @@ export class UtilitaryMigrationCLI {
         }
         return {"status":false,"type":"down","warning":"Event type down is empty?","error":"Migration file or event on index "+index+" no found, verify the property down in the migration file!"}
     }
-    //ok
+    
     run_migration_directly = async()=>{
         const file_name=this.argv[3]
         const type=this.argv[4]
@@ -656,7 +653,7 @@ export class UtilitaryMigrationCLI {
             return {"status":false,"error":"Failed Query: "+type.toUpperCase()+", Query type not supported!"}
         }
     }
-    // ok
+    
     MessageConsoleAction = (queries,type,file_name,index=-1)=>{
         const description = queries["description"] ?? file_name
         let message_query = " no show "
@@ -664,16 +661,16 @@ export class UtilitaryMigrationCLI {
         console.info(colors.magenta(this.alias_username)+colors.green(" Dispatch: ")+colors.blue(" Type: " +type.toUpperCase())+colors.green(" Query: ")+colors.cyan(message_query)+colors.green(" Index: ")+colors.cyan(index)+colors.green(" Description: ")+colors.cyan(description))
         return description
     }
-    //ok
+
     MessageConsoleQueryEmpty = (type,description)=>{ 
         console.info(colors.magenta(this.alias_username)+colors.red(" Warning: ")+colors.yellow(" Query type "+type.toUpperCase()+" is empty! ")+colors.green(" Description: ")+colors.cyan(description))    
     }
-    //ok
+    
     MessageConsoleQueryError = (type,description)=>{
         console.error(colors.magenta(this.alias_username)+colors.red(" Warning: Failed Query! "+type.toUpperCase()+", message: The query should be of text type and contain up and down properties in file to migrate!")+colors.green(" Description: ")+colors.cyan(description))
         console.error(colors.magenta(this.alias_username)+colors.red(" Warning: Fix this file and retry again!"))
     }
-    //ok
+    
     get_status = async()=>{
         const results = await this.get_timestamps_db()
         const timestamps_db = map_timestamps_to_number_sort_asc(results)
@@ -727,7 +724,7 @@ export class UtilitaryMigrationCLI {
         console.log(colors.yellow ("👍 End - Read Warnings Repeated" ))
         return {"status":true,"migrated":timestamps_db.length,"files":files.length,"repeated":repeated.length}
     }
-    //ok
+    
     handle = async()=>{
         if(this.argv[2] === enumCoommands.db_create && this.argv.length == 4){
             const validateFileName =  validate_file_name(this.argv[3])

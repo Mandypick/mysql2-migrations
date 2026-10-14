@@ -93,6 +93,7 @@
     console.log('migration batch command result 2: '+result2)
     console.log('migration batch command result 3: '+result3)
 
+    // Don't close the pool if you need to reuse it continuously; to reopen it you'll need another instance or restart the environment.
     db_query.closePool(); // close the mysql2 pool connection after executing the migration commands sequentially
 
     ```
