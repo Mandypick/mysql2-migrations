@@ -1,7 +1,7 @@
 {
   "name": "mysql2-migrations",
   "version": "4.0.0",
-  "description": "Create and manager migrations with mysql2 in module type apps",
+  "description": "Create and manage cli and batch migrations with mysql2 in module type apps",
   "main": "index.js",
   "type": "module",
   "bin": {
