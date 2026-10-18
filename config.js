@@ -25,7 +25,7 @@ const addFileConfig = async()=>{
     "  port: 3306,\n"+
     "  user: 'root',\n"+
     "  password: 'password',\n"+
-    "  database_name: 'test',\n"+
+    "  database: 'test',\n"+
     "  table_migrations_name: 'table_migrations_app',\n"+
     "  show_query: true,\n"+
     "  skip_migration_error: false,\n"+
@@ -52,7 +52,7 @@ const addFileConfigBatch = async()=>{
     "  port: 3306,\n"+
     "  user: 'root',\n"+
     "  password: 'password',\n"+
-    "  database_name: 'test',\n"+
+    "  database: 'test',\n"+
     "  table_migrations_name: 'table_migrations_app',\n"+
     "  show_query: true,\n"+
     "  skip_migration_error: false,\n"+

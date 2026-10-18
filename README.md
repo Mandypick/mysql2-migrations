@@ -43,7 +43,7 @@
         "port": 3306,            // mysql server port
         "user": "root",          // mysql user with permissions to CREATE/ALTER/DROP
         "password": "password",  // mysql user password
-        "database_name": "test_db", // target database name
+        "database": "test_db", // target database name
         "table_migrations_name": "table_migrations_app",  // table used to track executed migrations (min 2, max 60 chars, only letters/numbers/underscore)
         "show_query": false,      // print the SQL being executed for each migration file (useful for debugging)
         // continue running the remaining migration files even if one query fails, this can hide real errors, e.g. migration files with an empty "down" or "up" query, SYNTAX ERROR in an SQL statement
@@ -66,7 +66,7 @@
         user : "root",
         password : "password",
         database : "test_db",
-        name_table_migrations : "table_migrations_app",
+        table_migrations_name : "table_migrations_app",
         show_query : true,
         // continue running the remaining migration files even if one query fails, this can hide real errors, e.g. migration files with an empty "down" or "up" query, SYNTAX ERROR in an SQL statement
         skip_migration_error : false,

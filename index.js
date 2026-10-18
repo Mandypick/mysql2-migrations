@@ -13,21 +13,21 @@ export class MigrationBatch {
     #table_migrations_name = null;
     alias_username = os.hostname() || os.userInfo().username || "Sabueso";
 
-    constructor({host,port,user,password,database_name,table_migrations_name,show_query = true,skip_migration_error = true,show_depuration = true}){
+    constructor({host,port,user,password,database,table_migrations_name,show_query = true,skip_migration_error = true,show_depuration = true}){
         this.#table_migrations_name = table_migrations_name;
         this.#show_query = show_query;
         this.#skip_migration_error = skip_migration_error;
         this.#show_depuration = show_depuration;
-        this.createPool(host,port,user,password,database_name)
+        this.createPool(host,port,user,password,database)
     }
 
-    createPool = (host,port,user,password,database_name)=>{
+    createPool = (host,port,user,password,database)=>{
         const objectConn = {
             "host":host,
             "port":port,
             "user":user,
             "password":password,
-            "database":database_name,
+            "database":database,
             "waitForConnections":true,
             "connectionLimit":100,
             "queueLimit":0,
@@ -93,21 +93,21 @@ export class MigrationCLI {
     alias_username = os.hostname() || os.userInfo().username || "Sabueso";
     cb = (messageEvent="")=>{ console.info(colors.cyan(colors.magenta(this.alias_username)+" Command "+colors.magenta(messageEvent)+" Finished! "))};
 
-    constructor({host,port,user,password,database_name,table_migrations_name,show_query = true,skip_migration_error = true,show_depuration = true}){
+    constructor({host,port,user,password,database,table_migrations_name,show_query = true,skip_migration_error = true,show_depuration = true}){
         this.#table_migrations_name = table_migrations_name;
         this.#show_query = show_query;
         this.#skip_migration_error = skip_migration_error;
         this.#show_depuration = show_depuration;
-        this.createPool(host,port,user,password,database_name)
+        this.createPool(host,port,user,password,database)
     }
 
-    createPool = (host,port,user,password,database_name)=>{
+    createPool = (host,port,user,password,database)=>{
         const objectConn = {
             "host":host,
             "port":port,
             "user":user,
             "password":password,
-            "database":database_name,
+            "database":database,
             "waitForConnections":true,
             "connectionLimit":100,
             "queueLimit":0,
@@ -136,11 +136,7 @@ export class MigrationCLI {
         const instanceMigration = new UtilitaryMigrationCLI(InstanceParams)
         const result = await instanceMigration.__main();
         if( typeof this.#show_depuration === "boolean" && this.#show_depuration){console.info(colors.cyan("mysql2-migrations log: "),result)}
-        await this.#pool.end().catch((e)=>{
-            console.log(colors.red("Error to close mysql2 PoolConnection:",e))
-        }).then().finally(()=>{
-            console.info(colors.cyan("mysql2-migrations log: "+colors.magenta("PoolConnection mysql2 closed!")))
-        })
+        // Note: Pool connection will be properly closed after execution as intended for CLI usage
         process.exit(0)
     }
 }
